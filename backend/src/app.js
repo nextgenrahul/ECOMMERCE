@@ -20,8 +20,10 @@ app.use(express.urlencoded({extended: true, limit: "16kb"}))
 app.use(cookieParser())
 app.use(express.static('public'))
 
-app.use("/api/", (req, res) =>{
-    res.send("Welcome")
-})
+
+// Route
+import router from "./routes/user.routes.js";
+app.use('/api/users', router);
+
 
 export {app}
