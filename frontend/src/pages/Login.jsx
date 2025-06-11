@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { assets } from "../assets/images/assets";
+import { AppContext } from "../context/AppContext";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { backendUrl, setIsLoggedin, getUserData } = useContext(AppContext);
   const [isLogin, setIsLogin] = useState(true);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -17,12 +21,43 @@ const Login = () => {
     alert("Reset Password functionality to be implemented");
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (isLogin) {
-      alert("Login functionality to be implemented");
-    } else {
-      alert("Sign Up functionality to be implemented");
+  const handleSubmit = async (e) => {
+    try {
+      e.preventDefault();
+      axios.defaults.withCredentials = true;
+      if (!isLogin) {
+        const { data } = await axios.post(backendUrl + "/api/auth/register", {
+          fullName: name,
+          email,
+          password,
+        });
+
+        if (data.success) {
+          setIsLoggedin(true);
+          navigate("/");
+          getUserData();
+
+          toast.success(data.message);
+        } else {
+          toast.error(data.message);
+        }
+      } else {
+        const { data } = await axios.post(backendUrl + "/api/auth/login", {
+          email,
+          password,
+        });
+
+        if (data.success) {
+          setIsLoggedin(true);
+          navigate("/");
+          getUserData();
+          toast.success(data.message);
+        } else {
+          toast.error(data.message);
+        }
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Something went wrong");
     }
   };
 
@@ -91,7 +126,10 @@ const Login = () => {
             {isLogin ? (
               <>
                 <p>
-                  <Link className="text-blue-600 cursor-pointer" to="/reset-password">
+                  <Link
+                    className="text-blue-600 cursor-pointer"
+                    to="/reset-password"
+                  >
                     Forgot Password?
                   </Link>
                 </p>
