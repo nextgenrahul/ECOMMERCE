@@ -1,9 +1,11 @@
 import React, { useContext, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { assets } from "../assets/images/assets.js";
+import { AppContext } from "../context/AppContext.jsx";
 
 const MainNavbar = () => {
     const [visible, setVisible] = useState(false)
+    const {showSearch, setShowSearch} = useContext(AppContext);
   return (
     <div className="flex items-center justify-between py-5 font-medium shadow-full">
       <Link to="/">
@@ -28,7 +30,9 @@ const MainNavbar = () => {
         </NavLink>
       </ul>
       <div className="flex items-center gap-6">
-        <img src={assets.search_icon} className="w-5 cursor-pointer" />
+        <img
+        onClick={() => setShowSearch(!showSearch)}
+         src={assets.search_icon} className="w-5 cursor-pointer" />
         <div className="group relative">
           <img
             className="w-5 cursor-pointer"

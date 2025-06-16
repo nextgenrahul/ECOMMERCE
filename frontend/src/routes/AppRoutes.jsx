@@ -12,15 +12,17 @@ import Collection from "../pages/Collection";
 import Contact from "../pages/Contact";
 import Cart from "../pages/Cart";
 import About from "../pages/About";
-import Products from "../pages/Products";
+import Product from "../pages/Product";
 import MainNavbar from "../components/MainNavbar";
 import Footer from "../components/Footer";
+import SearchBar from "../components/SearchBar";
 
 const AppRoutes = () => {
   return (
     <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">
       <ToastContainer />
       <MainNavbar />
+      <SearchBar />
       <Routes>
         {/* <Route path="/" element={<Home />} /> */}
         <Route path="/login" element={<Login />} />
@@ -34,7 +36,7 @@ const AppRoutes = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/about" element={<About />} />
-        <Route path="/product/:productId" element={<Products />} />
+        <Route path="/product/:productId" element={<Product />} />
       </Routes>
       <Footer />
     </div>

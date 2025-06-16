@@ -81,6 +81,7 @@ import hand_wave from "./hand_wave.png";
 import main_icon from "./mail_icon.svg";
 import lock_icon from "./lock_icon.svg";
 import logo_icon from "./logo_icon.svg";
+import hero_i from "./her.jpg";
 
 export const assets = {
     logoIcon,
@@ -108,6 +109,9 @@ export const assets = {
     contact_img,
     razorpay_logo,
     stripe_logo,
+    hero_i,
+        cross_icon
+
 }
 
 export const products = [
