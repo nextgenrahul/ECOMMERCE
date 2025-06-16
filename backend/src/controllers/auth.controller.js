@@ -20,9 +20,9 @@ const generateAccessAndRefreshTokens = async (userId) => {
 
 
 const registerUser = asyncHandler(async (req, res) => {
-    const { fullName, email, password } = req.body;
+    const { fullName, email, password, role } = req.body;
 
-    if ([fullName, email, password].some((field) => !field?.trim())) {
+    if ([fullName, email, password, role].some((field) => !field?.trim())) {
         throw new ApiError(400, "All fields are required.");
     }
 
@@ -33,7 +33,8 @@ const registerUser = asyncHandler(async (req, res) => {
     const user = await User.create({
         fullName,
         email,
-        password
+        password,
+        role
     });
 
     const safeUser = await User.findById(user._id).select(
@@ -48,7 +49,7 @@ const registerUser = asyncHandler(async (req, res) => {
         to: email,
         subject: "Welcome to Our Company",
         text: `Welcome to our company! You are now registered as a client.Your \nemail ID: ${email}`,
-    }
+    } 
     await transporter.sendMail(mailOptions);
     return res
         .status(201)
@@ -188,7 +189,7 @@ const verifyEmail = asyncHandler(async (req, res) => {
     user.isAccountVerified = true;
     user.verifyOtp = "";
     user.verifyOtpExpireAt = 0;
-    
+
     await user.save();
 
     return res.json(new ApiResponse(200, {}, "Account verified successfully"));

@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 
 const verifyJWT = asyncHandler(async (req, res, next) => {
     const token = req.cookies?.accessToken;
@@ -19,5 +20,16 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
     req.body.userId = decoded._id;
     next();
 });
+const restrictTo = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res
+        .status(403)
+        .json(new ApiResponse(403, "You do not have permission to perform this action"));
+    }
+    next();
+  };
+};
 
-export default verifyJWT;
+
+export {verifyJWT, restrictTo};

@@ -1,4 +1,4 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 const userSchema = new mongoose.Schema(
@@ -21,6 +21,13 @@ const userSchema = new mongoose.Schema(
         password: {
             type: String,
             required: [true, "Password is required."]
+        },
+        role: {
+            type: String,
+            enum: ["admin", "seller", "customer"],
+            default: "customer",
+            required: true,
+            required: true,
         },
         verifyOtp: {
             type: String,
@@ -66,8 +73,8 @@ userSchema.methods.generateAccessToken = function () {
         {
             _id: this._id,
             email: this.email,
-            fullName: this.fullName
-
+            fullName: this.fullName,
+            role: this.role
         },
         process.env.ACCESS_TOKEN_SECRET,
         {

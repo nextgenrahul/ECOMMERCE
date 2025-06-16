@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { loginUser, registerUser, logoutUser, sentVerifyOtp, verifyEmail, sendResetOtp, resetPassword, isAuthenticated } from "../controllers/auth.controller.js";
-import verifyJWT from "../middlewares/auth.middleware.js";
+import {verifyJWT, restrictTo} from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
@@ -19,4 +19,4 @@ router.route("/is-auth").post(verifyJWT, isAuthenticated);
 router.route("/send-reset-otp").post(sendResetOtp);
 router.route("/reset-password").post(resetPassword);
 
-export default router;
+export default router;  
