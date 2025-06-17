@@ -64,9 +64,7 @@ const Login = () => {
   return (
     <>
       <div className="w-full flex justify-between items-center p-4 sm:p-6 sm:px-24 absolute top-0">
-        <Link to="/">
-          <img src={assets.logoIcon} alt="" />
-        </Link>
+        
       </div>
       <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="w-full max-w-md p-8 border-2 border-black rounded-lg bg-white">

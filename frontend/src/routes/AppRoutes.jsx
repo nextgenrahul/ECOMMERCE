@@ -16,6 +16,9 @@ import Product from "../pages/Product";
 import MainNavbar from "../components/MainNavbar";
 import Footer from "../components/Footer";
 import SearchBar from "../components/SearchBar";
+import PlaceOrder from "../pages/PlaceOrder";
+import Order from "../pages/Order";
+import NewLogin from "../pages/NewLogin";
 
 const AppRoutes = () => {
   return (
@@ -24,19 +27,20 @@ const AppRoutes = () => {
       <MainNavbar />
       <SearchBar />
       <Routes>
-        {/* <Route path="/" element={<Home />} /> */}
-        <Route path="/login" element={<Login />} />
+        {/* <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/email-verify" element={<EmailVerify />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-
+        <Route path="/reset-password" element={<ResetPassword />} />   */}
         {/* Frontend Route */}
+        <Route path="/login" element={<NewLogin />}/>
         <Route path="/" element={<MainHome />} />
         <Route path="/collection" element={<Collection />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/about" element={<About />} />
         <Route path="/product/:productId" element={<Product />} />
+        <Route path="/place-order" element={<PlaceOrder />} />
+        <Route path="/orders" element={<Order />} />
       </Routes>
       <Footer />
     </div>
