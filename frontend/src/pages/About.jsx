@@ -1,6 +1,7 @@
 import React from "react";
 import Title from "../components/Title";
 import { assets } from "../assets/images/assets";
+import NewsLetterBox from "../components/NewsLetterBox";
 
 const About = () => {
   return (
@@ -81,6 +82,7 @@ const About = () => {
           </p>
         </div>
       </div>
+      <NewsLetterBox  />
     </div>
   );
 };
