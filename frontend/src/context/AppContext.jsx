@@ -1,9 +1,9 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 
 // frontend
-import { products } from "../assets/images/assets.js";
+// import { products } from "../assets/images/assets.js";
 import { useNavigate } from "react-router-dom";
 
 export const AppContext = createContext();
@@ -19,6 +19,7 @@ export const AppContextProvider = ({ children }) => {
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(true);
   const [cartItems, setCartItems] = useState({});
+  const [products, setProducts] = useState([]);
 
   const getUserData = async () => {
     if (!backendUrl) {
@@ -83,6 +84,22 @@ export const AppContextProvider = ({ children }) => {
     setCartItems(cartData);
   }
 
+  const getProductsData = async () => {
+    try {
+      const response = await axios.get(backendUrl + '/api/product/list');
+      if(response.data.success){
+        setProducts(response.data.products);
+      }else{
+        toast.error(response.data.message)
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  }
+  useEffect(() => {
+    getProductsData();
+  }, [])
    const getCartAmount = () => {
     let totalAmount = 0;
     for (const items in cartItems) {
@@ -119,7 +136,7 @@ export const AppContextProvider = ({ children }) => {
     addToCart,
     getCartCount,
     updateQuantity,
-    getCartAmount
+    getCartAmount,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

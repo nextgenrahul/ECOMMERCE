@@ -28,19 +28,21 @@ const Collection = () => {
   };
 
   const applyFilter = () => {
-    let productsCopy = products.slice();
+    let productsCopy = products?.slice();
     if (showSearch && search) {
       productsCopy = productsCopy.filter((item) =>
         item.name.toLowerCase().includes(search.toLowerCase())
       );
     }
+
     if (category.length > 0) {
-      productsCopy = productsCopy.filter((item) =>
+      productsCopy = productsCopy?.filter((item) =>
         category.includes(item.category)
       );
     }
+    
     if (subCategory.length > 0) {
-      productsCopy = productsCopy.filter((item) =>
+      productsCopy = productsCopy?.filter((item) =>
         subCategory.includes(item.subCategory)
       );
     }
@@ -48,10 +50,10 @@ const Collection = () => {
   };
 
   const sortProduct = () => {
-    let fpCopy = filterProducts.slice();
+    let fpCopy = filterProducts?.slice();
     switch (sortType) {
       case "low-high":
-        setFilterProduct(fpCopy.sort((a, b) => a.price - b.price));
+        setFilterProduct(fpCopy?.sort((a, b) => a.price - b.price));
         break;
       case "high-low":
         setFilterProduct(fpCopy.sort((a, b) => b.price - a.price));
@@ -63,7 +65,7 @@ const Collection = () => {
   };
   useEffect(() => {
     applyFilter();
-  }, [category, subCategory, search, showSearch]);
+  }, [category, subCategory, search, showSearch, products]);
 
   useEffect(() => {
     sortProduct();
@@ -174,7 +176,7 @@ const Collection = () => {
         </div>
         {/* Map Products */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
-          {filterProducts.map((item, index) => (
+          {filterProducts?.map((item, index) => (
             <ProductItem
               key={index}
               name={item.name}
