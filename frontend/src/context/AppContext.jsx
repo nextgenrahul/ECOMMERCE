@@ -20,6 +20,7 @@ export const AppContextProvider = ({ children }) => {
   const [showSearch, setShowSearch] = useState(true);
   const [cartItems, setCartItems] = useState({});
   const [products, setProducts] = useState([]);
+  const [token, setToken] = useState('')
 
   const getUserData = async () => {
     if (!backendUrl) {
@@ -61,7 +62,16 @@ export const AppContextProvider = ({ children }) => {
       cartData[itemId] = {};
       cartData[itemId][size] = 1;
     }
-    setCartItems(cartData);
+    setCartItems(cartData); 
+    if(token){
+      try {
+        await axios.post(backendUrl + '/api/cart/add', {itemId, size}, {headers: {token}})
+      } catch (error) {
+        console.log(error);
+        toast.error(error.message)
+        
+      }
+    }
   };
   
   const getCartCount = () => {
@@ -78,12 +88,31 @@ export const AppContextProvider = ({ children }) => {
     return totalCount;
   };
 
-  const updateQuantity = (itemId, size, quantity) => {
+  const updateQuantity = async (itemId, size, quantity) => {
     let cartData = structuredClone(cartItems);
     cartData[itemId][size] = quantity;
     setCartItems(cartData);
+    if(token){
+      try {
+        await axios.post(backendUrl + "/api/cart/update", {itemId, size, quantity}, {headers: {token}})
+      } catch (error) {
+        console.log(error);
+        toast.error(error.message)
+      }
+    }
   }
 
+  const getUserCart = async (token) => {
+    try {
+      const response = await axios.post(backendUrl + "/api/cart/get", {}, {headers: {token}})
+      if(response){
+        setCartItems(response.data.cartData);
+      }
+    } catch (error) {
+      console.log(error)
+      toast.error(error.message)
+    }
+  }
   const getProductsData = async () => {
     try {
       const response = await axios.get(backendUrl + '/api/product/list');
@@ -100,6 +129,12 @@ export const AppContextProvider = ({ children }) => {
   useEffect(() => {
     getProductsData();
   }, [])
+  useEffect(() => {
+    if(!token && localStorage.getItem('token')){
+      setToken(localStorage.getItem('token'))
+      getUserCart(localStorage.getItem('token'));
+    }
+  })
    const getCartAmount = () => {
     let totalAmount = 0;
     for (const items in cartItems) {
@@ -137,6 +172,8 @@ export const AppContextProvider = ({ children }) => {
     getCartCount,
     updateQuantity,
     getCartAmount,
+    token, 
+    setToken
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
