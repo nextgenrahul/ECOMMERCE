@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { backendUrl, currency } from '../App';
-import { assets } from '../assets/admin_assets/assets.js';
+import { backendUrl, currency } from "../App";
+import { assets } from "../assets/admin_assets/assets.js";
 
 const Orders = ({ token }) => {
   const [orders, setOrders] = useState([]);
+  const [statusHan, setStatusHan] = useState("");
+  const [reason, setReason] = useState("");
+  const [orderUpdates, setOrderUpdates] = useState({});
 
   const fetchAllOrders = async () => {
     if (!token) return;
@@ -26,46 +29,88 @@ const Orders = ({ token }) => {
       toast.error(error.message);
     }
   };
-  const statusHandler = async (e, orderId) => {
+  
+  const handleSubmit = async (orderId) => {
+    const { status, reason } = orderUpdates[orderId] || {};
+
+    // if (!status || reason) {
+    //   return toast.error("Please select status and provide reason.");
+    // }
+
     try {
-      const response = await axios.post(backendUrl + "/api/order/status", {orderId, status: e.target.value}, {headers: {token}});
-      if(response.data.success){
-        await fetchAllOrders()
-        toast.success(response.data.message)
+      let response;
+      if (status === "Delivered") {
+        response = await axios.post(
+          backendUrl + "/api/order/status",
+          { orderId, status, reason, payment: true },
+          { headers: { token } }
+        );
+      } else {
+        response = await axios.post(
+          backendUrl + "/api/order/status",
+          { orderId, status, reason },
+          { headers: { token } }
+        );
+      }
+
+      if (response.data.success) {
+        toast.success("Order status updated.");
+        fetchAllOrders();
+      } else {
+        toast.error(response.data.message || "Update failed.");
       }
     } catch (error) {
-      console.log(error)
-      toast.error(response.data.message)
+      console.error(error);
+      toast.error("Something went wrong.");
     }
-
-  }
+  };
 
   useEffect(() => {
     fetchAllOrders();
   }, [token]);
 
   return (
-    <div className="p-4">
+    <div className="p-4 overflow-hidden">
       <h3 className="text-xl font-bold mb-4">Order Page</h3>
 
       <div className="flex flex-col gap-6">
         {orders.map((order, index) => (
           <div
             key={index}
-            className="grid grid-cols-1 md:grid-cols-3 gap-4 border p-4 rounded shadow items-start"
+            className={`${
+              order.status === "Delivered"
+                ? "inset-0 select-none bg-black opacity-30 no rounded pointer-events-none z-10"
+                : ""
+            } relative grid grid-cols-1 md:grid-cols-3 gap-4 border p-4 rounded shadow items-start`}
           >
+            {order.status === "Delivered" && (
+              <h2 className="absolute top-4 left-1/2 -translate-x-1/2 w-fit text-center text-sm sm:text-base md:text-lg lg:text-xl font-bold text-red-600 bg-white rounded-2xl p-2 z-20 shadow-md">
+                Product Delivered | Payment:{" "}
+                {order.payment ? "✅ Done" : "⌛ Pending"}
+              </h2>
+            )}
+
             {/* Left Column - Order & Customer Info */}
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <img src={assets.parcel_icon} alt="Parcel" className="h-5 w-5" />
+                <img
+                  src={assets.parcel_icon}
+                  alt="Parcel"
+                  className="h-5 w-5"
+                />
                 <p className="text-sm font-semibold">Order #{index + 1}</p>
               </div>
 
               <div className="text-sm text-gray-800 mb-2">
+                <p>Order Id : {order._id}</p>
                 <p className="font-medium">Customer:</p>
-                <p>{order.address.firstName} {order.address.lastName}</p>
                 <p>
-                  {order.address.street}, {order.address.city}, {order.address.state}, {order.address.country} - {order.address.zipcode}
+                  Name : {order.address.firstName} {order.address.lastName}
+                </p>
+                <p>
+                  Address : {order.address.street}, {order.address.city},{" "}
+                  {order.address.state}, {order.address.country} -{" "}
+                  {order.address.zipcode}
                 </p>
                 <p>Phone: {order.address.phone}</p>
               </div>
@@ -91,15 +136,57 @@ const Orders = ({ token }) => {
             {/* Right Column - Price & Status */}
             <div className="text-right md:text-left flex flex-col gap-3">
               <p className="text-sm text-gray-800">
-                <span className="font-medium">Amount:</span> {currency}{order.amount}
+                <span className="font-medium">Amount:</span> {currency}
+                {order.amount}
               </p>
-              <select onChange={(e) => statusHandler(e, order._id)} value={order.status} className="border border-gray-300 px-2 py-1 rounded w-full">
+              <select
+                onChange={(e) =>
+                  setOrderUpdates((prev) => ({
+                    ...prev,
+                    [order._id]: {
+                      ...(prev[order._id] || {}),
+                      status: e.target.value,
+                    },
+                  }))
+                }
+                value={orderUpdates[order._id]?.status || order.status}
+                className="border border-gray-300 px-2 py-1 rounded w-full"
+              >
                 <option value="Order Placed">Order Placed</option>
                 <option value="Packing">Packing</option>
                 <option value="Shipped">Shipped</option>
                 <option value="Out for Delivery">Out for delivery</option>
                 <option value="Delivered">Delivered</option>
               </select>
+              <textarea
+                name="reason"
+                placeholder="Enter Reason"
+                className="w-full border border-gray-300 rounded px-3 py-2 mb-3 resize-none"
+                rows="4"
+                value={orderUpdates[order._id]?.reason ?? order.reason}
+                onChange={(e) =>
+                  setOrderUpdates((prev) => ({
+                    ...prev,
+                    [order._id]: {
+                      ...(prev[order._id] || {}),
+                      reason: e.target.value,
+                    },
+                  }))
+                }
+              />
+
+              <button
+                onClick={() => handleSubmit(order._id)}
+                disabled={order.status === "Delivered"}
+                type="button"
+                className={`border-2 rounded-2xl px-3 py-1 text-white ${
+                  order.status === "Delivered"
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-green-500"
+                }`}
+              >
+                Submit
+              </button>
             </div>
           </div>
         ))}

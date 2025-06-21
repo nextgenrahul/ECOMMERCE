@@ -19,6 +19,7 @@ import SearchBar from "../components/SearchBar";
 import PlaceOrder from "../pages/PlaceOrder";
 import Order from "../pages/Order";
 import NewLogin from "../pages/NewLogin";
+import TrackOrder from "../pages/TrackOrder";
 
 const AppRoutes = () => {
   return (
@@ -41,6 +42,8 @@ const AppRoutes = () => {
         <Route path="/product/:productId" element={<Product />} />
         <Route path="/place-order" element={<PlaceOrder />} />
         <Route path="/orders" element={<Order />} />
+        <Route path="/trackOrder" element={<TrackOrder />} />
+
       </Routes>
       <Footer />
     </div>

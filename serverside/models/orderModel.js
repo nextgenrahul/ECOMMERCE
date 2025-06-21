@@ -6,6 +6,7 @@ const orderSchema = new mongoose.Schema({
   amount: { type: Number, required: true },
   address: { type: Object, required: true },
   status: { type: String, required: true, default: 'Order Placed' },
+  reason:{type: String, default: "Thanks For Shopping"},
   paymentMethod: { type: String, required: true }, // e.g., 'COD', 'UPI'
   payment: { type: Boolean, required: true, default: false },
   date: { type: Number, required: true }, // You can also use: default: Date.now

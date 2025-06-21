@@ -12,10 +12,14 @@ const Add = ({ token }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [category, setCategory] = useState("Men");
-  const [subCategory, setSubCategory] = useState("Topwear");
   const [bestseller, setBestSeller] = useState(false);
   const [sizes, setSizes] = useState([]);
+  
+  // Category And Subcategory And Articles
+  const [category, setCategory] = useState("");
+  const [subCategory, setSubCategory] = useState("");
+  const [article, setArticle] = useState("");
+  
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
@@ -35,11 +39,7 @@ const Add = ({ token }) => {
       formData.append("bestSeller", bestseller ? "true" : "false");
       formData.append("sizes", JSON.stringify(sizes));
 
-      const response = await axios.post(
-        backendUrl + "/api/product/add",
-        formData,
-        { headers: { token } }
-      );
+      const response = await axios.post(backendUrl + "/api/product/add", formData,{ headers: { token } });
       if (response.data.success) {
         toast.success(response.data.message);
         setName("");
@@ -148,9 +148,7 @@ const Add = ({ token }) => {
             onChange={(e) => setCategory(e.target.value)}
             className="w-full px-3 py-2"
           >
-            <option value="Men">Men</option>
-            <option value="Women">Women</option>
-            <option value="Kids">Kids</option>
+            
           </select>
         </div>
         <div>
@@ -159,9 +157,16 @@ const Add = ({ token }) => {
             onChange={(e) => setSubCategory(e.target.value)}
             className="w-full px-3 py-2"
           >
-            <option value="Topwear">Topwear</option>
-            <option value="Bottomwear">Bottomwear</option>
-            <option value="Winterwear">Winterwear</option>
+            
+          </select>
+        </div>
+        <div>
+          <p className="mb-2">Article</p>
+          <select
+            onChange={(e) => setArticle(e.target.value)}
+            className="w-full px-3 py-2"
+          >
+                       
           </select>
         </div>
         <div>
@@ -176,7 +181,7 @@ const Add = ({ token }) => {
         </div>
       </div>
       <div>
-        <p className="mb-2">Product Sizes</p>
+        <p className="mb-2">Cloths Size</p>
         <div className="flex gap-3">
           <div
             onClick={() =>

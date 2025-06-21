@@ -42,7 +42,6 @@ const registerUser = async (req, res) => {
         // Validating email and strong password
         if (!validator.isEmail(email)) {
             return res.json({ success: false, message: "Please enter a valid email." })
-
         }
         if (password.length < 8) {
             return res.json({ success: false, message: "Please enter a strong password." })

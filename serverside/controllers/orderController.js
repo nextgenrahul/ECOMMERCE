@@ -70,8 +70,8 @@ const userOrders = async (req, res) => {
 // Update Order status from admin
 const updateStatus = async (req, res) => {
   try {
-    const { orderId, status } = req.body;
-    await orderModel.findByIdAndUpdate(orderId, { status });
+    const { orderId, status, reason , payment} = req.body;
+    await orderModel.findByIdAndUpdate(orderId, { status, reason , payment  });
     res.json({ success: true, message: "Status Updated" })
   } catch (error) {
     console.log(error);
@@ -79,7 +79,22 @@ const updateStatus = async (req, res) => {
   }
 }
 
-export { placeOrder, placeOrderStripe, placeOrderRazorpay, allOrders, userOrders, updateStatus };
+
+// Get Order Track result 
+const trackerOrder = async (req, res) => {
+  try {
+    const {orderId} = req.body;
+    console.log(orderId)
+    const trackData = await orderModel.findOne({_id: orderId});    
+    res.json({success: true, trackData});
+  } catch (error) {
+    console.log(error);
+    res.json({success: false, message: error.message})
+  }
+}
+
+
+export { placeOrder, placeOrderStripe, placeOrderRazorpay, allOrders, userOrders, updateStatus, trackerOrder };
 
 
 

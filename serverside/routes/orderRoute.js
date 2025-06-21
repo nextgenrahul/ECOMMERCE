@@ -5,7 +5,8 @@ import {
   placeOrderRazorpay,
   allOrders,
   userOrders,
-  updateStatus
+  updateStatus,
+  trackerOrder
 } from "../controllers/orderController.js";
 import adminAuth from "../middleware/adminAuth.js";
 import authUser from "../middleware/auth.js";
@@ -23,6 +24,9 @@ orderRouter.post('/razorpay', authUser, placeOrderRazorpay);
 
 // User Features
 orderRouter.post('/userorders', authUser, userOrders);
+
+// trackOrder Rotue
+orderRouter.post('/trackorder', trackerOrder);
 
 
 export default orderRouter;

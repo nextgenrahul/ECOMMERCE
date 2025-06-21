@@ -37,17 +37,13 @@ const updateCart = async (req, res) => {
     let cartData = userData.cartData || {};
 
     if (quantity === 0) {
-      // ✅ Remove the size
       if (cartData[itemId] && cartData[itemId][size]) {
         delete cartData[itemId][size];
-
-        // ✅ If no sizes left, remove the itemId key
         if (Object.keys(cartData[itemId]).length === 0) {
           delete cartData[itemId];
         }
       }
     } else {
-      // ✅ Update quantity normally
       if (!cartData[itemId]) cartData[itemId] = {};
       cartData[itemId][size] = quantity;
     }

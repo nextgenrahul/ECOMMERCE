@@ -46,17 +46,15 @@ const PlaceOrder = () => {
       }
 
       let orderItems = [];
-      for (const items in cartItems) {
-        for (const item in cartItems[items]) {
-          if (cartItems[items][item] > 0) {
-            const itemInfo = structuredClone(
-              products.find((product) => product._id === items)
-            );
-            if (itemInfo) {
-              itemInfo.size = item;
-              itemInfo.quantity = cartItems[items][item];
-              orderItems.push(itemInfo);
-            }
+      for (const productId in cartItems) {
+        for (const size in cartItems[productId]) {
+          const quantity = cartItems[productId][size];
+          if (quantity > 0) {
+            orderItems.push({
+              productId,
+              size,
+              quantity,
+            });
           }
         }
       }
@@ -65,16 +63,21 @@ const PlaceOrder = () => {
         address: formData,
         items: orderItems,
         amount: getCartAmount() + delivery_fee,
+        paymentMethod: method,
       };
 
       switch (method) {
         case "cod":
-          const response = await axios.post(backendUrl+'/api/order/place', orderData, {headers: {token}})
-          if(response.data.success){
-            setCartItems({})
-            navigate('/orders')
-          }else{
-            toast.error(response.data.message)
+          const response = await axios.post(
+            backendUrl + "/api/order/place",
+            orderData,
+            { headers: { token } }
+          );
+          if (response.data.success) {
+            setCartItems({});
+            navigate("/orders");
+          } else {
+            toast.error(response.data.message);
           }
           break;
 
@@ -83,7 +86,7 @@ const PlaceOrder = () => {
       }
     } catch (error) {
       console.error("Order placement error:", error);
-      toast.error(error.message)
+      toast.error(error.message);
     }
   };
 

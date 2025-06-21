@@ -69,7 +69,6 @@ export const AppContextProvider = ({ children }) => {
       } catch (error) {
         console.log(error);
         toast.error(error.message)
-        
       }
     }
   };
@@ -102,9 +101,11 @@ export const AppContextProvider = ({ children }) => {
     }
   }
 
+
   const getUserCart = async (token) => {
     try {
-      const response = await axios.post(backendUrl + "/api/cart/get", {}, {headers: {token}})
+      const response = await axios.post(backendUrl + "/api/cart/get", {}, {headers: {token}});
+
       if(response){
         setCartItems(response.data.cartData);
       }
@@ -113,6 +114,7 @@ export const AppContextProvider = ({ children }) => {
       toast.error(error.message)
     }
   }
+  
   const getProductsData = async () => {
     try {
       const response = await axios.get(backendUrl + '/api/product/list');
@@ -129,12 +131,14 @@ export const AppContextProvider = ({ children }) => {
   useEffect(() => {
     getProductsData();
   }, [])
+
   useEffect(() => {
     if(!token && localStorage.getItem('token')){
       setToken(localStorage.getItem('token'))
       getUserCart(localStorage.getItem('token'));
     }
-  })
+  }, [])
+
    const getCartAmount = () => {
     let totalAmount = 0;
     for (const items in cartItems) {
@@ -151,6 +155,7 @@ export const AppContextProvider = ({ children }) => {
     }
     return totalAmount;
   };
+  
   const value = {
     backendUrl,
     isLoggedin,

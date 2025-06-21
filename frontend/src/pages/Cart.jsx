@@ -5,9 +5,10 @@ import CartTotal from "../components/CartTotal";
 import { assets } from "../assets/images/assets";
 
 const Cart = () => {
-  const { products, currency, cartItems, updateQuantity, navigate } =
-    useContext(AppContext);
+  const { products, currency, cartItems, updateQuantity, navigate } = useContext(AppContext);
+
   const [cartData, setCartData] = useState([]);
+  
   useEffect(() => {
     if (products.length > 0) {
       const tempData = [];
