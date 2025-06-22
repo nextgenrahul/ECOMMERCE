@@ -12,7 +12,6 @@ function App() {
     <BrowserRouter>
       <ToastContainer />
       <AppContextProvider>
-        
         <AppRoutes />
       </AppContextProvider>
     </BrowserRouter>

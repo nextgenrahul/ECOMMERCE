@@ -1,6 +1,6 @@
-import React from 'react'
-import { NavLink} from "react-router-dom"
-import { assets } from '../assets/admin_assets/assets.js'
+import React from 'react';
+import { NavLink} from "react-router-dom";
+import { assets } from '../assets/admin_assets/assets.js';
 const Siderbar = () => {
   return (
     <div className='w-[28%] min-h-screen border-r border-gray-300'>
@@ -16,6 +16,14 @@ const Siderbar = () => {
             <NavLink className="flex items-center gap-3 border border-gray-300 border-r-0 px-3 py-2 rounded-l" to="/orders">
             <img className='w-5 h-5' src={assets.order_icon} alt="" />
             <p className='hidden md:block'>Orders</p>
+            </NavLink>
+            <NavLink className="flex items-center gap-3 border border-gray-300 border-r-0 px-3 py-2 rounded-l" to="/addSubCategories">
+            <img className='w-5 h-5' src={assets.order_icon} alt="" />
+            <p className='hidden md:block'>Add SubCategory</p>
+            </NavLink>
+            <NavLink className="flex items-center gap-3 border border-gray-300 border-r-0 px-3 py-2 rounded-l" to="/addCategories">
+            <img className='w-5 h-5' src={assets.order_icon} alt="" />
+            <p className='hidden md:block'>Add Category</p>
             </NavLink>
         </div>
     </div>

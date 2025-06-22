@@ -5,6 +5,7 @@ import { backendUrl, currency } from "../App";
 import { assets } from "../assets/admin_assets/assets.js";
 
 const Orders = ({ token }) => {
+
   const [orders, setOrders] = useState([]);
   const [statusHan, setStatusHan] = useState("");
   const [reason, setReason] = useState("");
@@ -29,7 +30,7 @@ const Orders = ({ token }) => {
       toast.error(error.message);
     }
   };
-  
+
   const handleSubmit = async (orderId) => {
     const { status, reason } = orderUpdates[orderId] || {};
 
@@ -38,6 +39,7 @@ const Orders = ({ token }) => {
     // }
 
     try {
+
       let response;
       if (status === "Delivered") {
         response = await axios.post(
@@ -45,6 +47,7 @@ const Orders = ({ token }) => {
           { orderId, status, reason, payment: true },
           { headers: { token } }
         );
+
       } else {
         response = await axios.post(
           backendUrl + "/api/order/status",
@@ -93,20 +96,27 @@ const Orders = ({ token }) => {
             {/* Left Column - Order & Customer Info */}
             <div>
               <div className="flex items-center gap-3 mb-2">
+
                 <img
                   src={assets.parcel_icon}
                   alt="Parcel"
                   className="h-5 w-5"
                 />
+
                 <p className="text-sm font-semibold">Order #{index + 1}</p>
+
               </div>
 
               <div className="text-sm text-gray-800 mb-2">
+
                 <p>Order Id : {order._id}</p>
+
                 <p className="font-medium">Customer:</p>
+
                 <p>
                   Name : {order.address.firstName} {order.address.lastName}
                 </p>
+                
                 <p>
                   Address : {order.address.street}, {order.address.city},{" "}
                   {order.address.state}, {order.address.country} -{" "}
@@ -135,10 +145,12 @@ const Orders = ({ token }) => {
 
             {/* Right Column - Price & Status */}
             <div className="text-right md:text-left flex flex-col gap-3">
+
               <p className="text-sm text-gray-800">
                 <span className="font-medium">Amount:</span> {currency}
                 {order.amount}
               </p>
+
               <select
                 onChange={(e) =>
                   setOrderUpdates((prev) => ({
@@ -158,6 +170,7 @@ const Orders = ({ token }) => {
                 <option value="Out for Delivery">Out for delivery</option>
                 <option value="Delivered">Delivered</option>
               </select>
+
               <textarea
                 name="reason"
                 placeholder="Enter Reason"
@@ -174,7 +187,6 @@ const Orders = ({ token }) => {
                   }))
                 }
               />
-
               <button
                 onClick={() => handleSubmit(order._id)}
                 disabled={order.status === "Delivered"}

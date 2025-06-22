@@ -3,16 +3,9 @@ import mongoose from "mongoose";
 const categorySchema = new mongoose.Schema(
     {
         category: { type: String, required: true },
-        subCategories: [
-            name: { type: String, required: true },
-            articles: [
-                {
-                    type: String, required: true
-                }
-            ]
-        ]
+        subCategories: {type: [String], required: true}
     }
-    ,{
+    , {
         timestamps: true
     }
 );
