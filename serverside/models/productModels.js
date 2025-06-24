@@ -2,17 +2,15 @@ import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema({
     name: { type: String, required: true },
-    product_id: { type: String, required: true, unique: true },
     description: { type: String, required: true },
     price: { type: Number, required: true },
     image: { type: [String], required: true },
 
     category: { type: String, required: true, index: true },
     subCategory: { type: String, required: true, index: true },
-    article: { type: String, required: true, index: true },
 
     stock: { type: Number, default: 0 },
-    sizes: { type: [String], required: true },
+    sizes: { type: [String], default: ""},
     isActive: { type: Boolean, default: true },
 
     bestseller: { type: Boolean, default: false },

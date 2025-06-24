@@ -21,6 +21,7 @@ export const AppContextProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState({});
   const [products, setProducts] = useState([]);
   const [token, setToken] = useState('')
+  const [categoryAllData, setCategoryAllData] = useState([]);
 
   const getUserData = async () => {
     if (!backendUrl) {
@@ -47,15 +48,15 @@ export const AppContextProvider = ({ children }) => {
   };
 
   const addToCart = async (itemId, size) => {
-    if (!size) {
-      toast.error("Select Product Size");
-      return;
-    }
+    // if (!size) {
+    //   toast.error("Select Product Size");
+    //   return;
+    // }
     let cartData = structuredClone(cartItems);
     if (cartData[itemId]) {
       if (cartData[itemId][size]) {
         cartData[itemId][size] += 1;
-      } else {
+      } else { 
         cartData[itemId][size] = 1;
       }
     } else {
@@ -155,7 +156,24 @@ export const AppContextProvider = ({ children }) => {
     }
     return totalAmount;
   };
-  
+
+  const getCategoryDataAll = async () => {
+    try {
+      const response = await axios.get(`${backendUrl}/api/category/list`, {
+        headers: { token },
+      });
+      
+      if (response.data.success) {
+        setCategoryAllData(response.data.data);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to fetch categories");
+    }
+  };
+  useEffect(() => {
+    getCategoryDataAll();
+  },[])
   const value = {
     backendUrl,
     isLoggedin,
@@ -178,7 +196,8 @@ export const AppContextProvider = ({ children }) => {
     updateQuantity,
     getCartAmount,
     token, 
-    setToken
+    setToken,
+    categoryAllData
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

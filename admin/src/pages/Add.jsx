@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { assets } from "../assets/admin_assets/assets";
 import axios from "axios";
 import { backendUrl } from "../App";
 import { toast } from "react-toastify";
+import { AdminContext } from "../context/AdminContext";
 const Add = ({ token }) => {
   const [image1, setImage1] = useState(false);
   const [image2, setImage2] = useState(false);
@@ -14,13 +15,16 @@ const Add = ({ token }) => {
   const [price, setPrice] = useState("");
   const [bestseller, setBestSeller] = useState(false);
   const [sizes, setSizes] = useState([]);
-  
   // Category And Subcategory And Articles
   const [category, setCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
   const [article, setArticle] = useState("");
+  const {categoryAllData} = useContext(AdminContext);
   
-
+  const getSubCategoryobj = () => {
+    const found = categoryAllData.find((sub) => sub.category === category )
+    return found ? found.subCategories : [];
+  }
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
@@ -148,6 +152,12 @@ const Add = ({ token }) => {
             onChange={(e) => setCategory(e.target.value)}
             className="w-full px-3 py-2"
           >
+            <option value="">select</option>
+            {
+              categoryAllData?.map((item, index) => {
+                return <option key={item._id}>{item.category}</option>
+              })
+            }
             
           </select>
         </div>
@@ -157,18 +167,15 @@ const Add = ({ token }) => {
             onChange={(e) => setSubCategory(e.target.value)}
             className="w-full px-3 py-2"
           >
-            
+            <option >Select</option>
+            {
+              getSubCategoryobj().map((item, index) => {
+                return <option key={index}>{item}</option>
+              })
+            }
           </select>
         </div>
-        <div>
-          <p className="mb-2">Article</p>
-          <select
-            onChange={(e) => setArticle(e.target.value)}
-            className="w-full px-3 py-2"
-          >
-                       
-          </select>
-        </div>
+        
         <div>
           <p className="mb-2">Product Price</p>
           <input
@@ -180,8 +187,11 @@ const Add = ({ token }) => {
           />
         </div>
       </div>
+      {
+        category === "Clothing" || category === "cloths" || category === "cloth" ? 
       <div>
         <p className="mb-2">Cloths Size</p>
+
         <div className="flex gap-3">
           <div
             onClick={() =>
@@ -270,6 +280,7 @@ const Add = ({ token }) => {
           </div>
         </div>
       </div>
+      : null }
       <div className="flex gap-2 mt-2">
         <input
           onChange={(e) => setBestSeller(e.target.checked)}

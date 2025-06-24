@@ -20,6 +20,7 @@ import PlaceOrder from "../pages/PlaceOrder";
 import Order from "../pages/Order";
 import NewLogin from "../pages/NewLogin";
 import TrackOrder from "../pages/TrackOrder";
+import Verify from "../pages/Verify";
 
 const AppRoutes = () => {
   return (
@@ -43,6 +44,7 @@ const AppRoutes = () => {
         <Route path="/place-order" element={<PlaceOrder />} />
         <Route path="/orders" element={<Order />} />
         <Route path="/trackOrder" element={<TrackOrder />} />
+        <Route path="/verify" element={<Verify />} />
 
       </Routes>
       <Footer />

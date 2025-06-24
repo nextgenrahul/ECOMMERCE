@@ -3,15 +3,12 @@ import { useParams } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import { assets } from "../assets/images/assets";
 import RelatedProduct from "../components/RelatedProduct";
-
 const Product = () => {
   const { productId } = useParams();
   const { products, currency, addToCart } = useContext(AppContext);
   const [productData, setProductData] = useState(false);
   const [image, setImage] = useState("");
-    const [size, setSize] = useState("");
-
-
+  const [size, setSize] = useState("");
   const fetchProductData = async () => {
     const foundProduct = products.find((item) => item._id === productId);
     if (foundProduct) {
@@ -62,24 +59,29 @@ const Product = () => {
           <p className="mt-5 text-gray-500 md:w-4/5">
             {productData.description}
           </p>
-          <div className="flex flex-col gap-4 my-8">
-            <p>Select Size </p>
-            <div className="flex gap-2">
-              {productData.sizes.map((item, index) => (
-                <button
-                  onClick={() => setSize(item)}
-                  className={`border border-gray-50  py-2 px-4 bg-gray-100 ${
-                    item === size ? "border-orange-500" : ""
-                  }`}
-                  key={index}
-                >
-                  {" "}
-                  {item}
-                </button>
-              ))}
+          {productData.category === "Clothing" && (
+            <div className="flex flex-col gap-4 my-8">
+              <p>Select Size </p>
+              <div className="flex gap-2">
+                {productData.sizes?.map((item, index) => (
+                  <button
+                    onClick={() => setSize(item)}
+                    className={`border border-gray-50  py-2 px-4 bg-gray-100 ${
+                      item === size ? "border-orange-500" : ""
+                    }`}
+                    key={index}
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-          <button onClick={() => addToCart(productData._id, size)} className="bg-black text-white px-8 py-3 text-sm active:bg-gray-700">
+          )}
+
+          <button
+            onClick={() => addToCart(productData._id, size)}
+            className="bg-black mt-3 text-white px-8 py-3 text-sm active:bg-gray-700"
+          >
             ADD TO CART
           </button>
           <hr className="mt-8 sm:w-4/5" />
@@ -111,10 +113,10 @@ const Product = () => {
           </p>
         </div>
         {/* Display Related Product */}
-         <RelatedProduct
-        category={productData.category}
-        subCategory={productData.subCategory}
-      />
+        <RelatedProduct
+          category={productData.category}
+          subCategory={productData.subCategory}
+        />
       </div>
     </div>
   ) : null;

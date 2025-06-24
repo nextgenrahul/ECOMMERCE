@@ -22,7 +22,7 @@ const addProduct = async (req, res) => {
         const images = [image1, image2, image3, image4].filter((item) => item !== undefined);
 
         // Upload to Cloudinary
-        
+
         const imagesUrl = await Promise.all(
             images.map(async (item) => {
                 const result = await cloudinary.uploader.upload(item.path, {
@@ -32,12 +32,15 @@ const addProduct = async (req, res) => {
             })
         );
 
-        let parsedSizes;
-        try {
-            parsedSizes = JSON.parse(sizes);
-            if (!Array.isArray(parsedSizes)) throw new Error("Invalid sizes array");
-        } catch {
-            return res.status(400).json({ success: false, message: "Invalid sizes format. It should be a JSON array." });
+        let parsedSizes = "";
+        if (category === "cloths" || category === "Clothing" || category === "cloth") {
+
+            try {
+                parsedSizes = JSON.parse(sizes);
+                if (!Array.isArray(parsedSizes)) throw new Error("Invalid sizes array");
+            } catch {
+                return res.status(400).json({ success: false, message: "Invalid sizes format. It should be a JSON array." });
+            }
         }
 
         const productData = {
@@ -65,15 +68,17 @@ const addProduct = async (req, res) => {
 
 
 // function for list product
+
 const listProduct = async (req, res) => {
-    try {
-        const products = await productModel.find({});
-        res.json({ success: true, products });
-    } catch (error) {
-        console.error("Error Listing product:", error);
-        res.status(500).json({ success: false, message: "Internal server error" });
-    }
-}
+  try {
+    const products = await productModel.find(); // fetching all products
+    res.json({ success: true, products });
+  } catch (error) {
+    console.error("Error listing products:", error);
+    res.json({ success: false, message: "Internal server error" });
+  }
+};
+// 
 
 // function for remove product
 const removeProduct = async (req, res) => {
@@ -101,5 +106,32 @@ const singleProduct = async (req, res) => {
     }
 }
 
+const getPaginateProduct = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 5;
+  const skip = (page - 1) * limit;
 
-export { addProduct, listProduct, removeProduct, singleProduct };
+  try {
+    const totalProducts = await productModel.countDocuments();
+    const products = await productModel.find().skip(skip).limit(limit);
+
+    res.json({
+      success: true,
+      data: products,
+      currentPage: page,
+      totalPages: Math.ceil(totalProducts / limit),
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: err.message,
+    });
+  }
+};
+
+
+
+
+
+export { addProduct, listProduct, removeProduct, singleProduct, getPaginateProduct };

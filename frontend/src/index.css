@@ -20,6 +20,52 @@ a.active hr{
 .bd-g{
     border: 1px solid rgb(205, 205, 205);
 }
+
+/* .pagination{
+    padding: 10px;
+    margin: 15px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination > span{
+    padding: 15px 20px;
+    border: 1px solid gray;
+    cursor: pointer;
+}
+.pagination_selected{
+    background-color: rgb(189, 189, 189);
+}
+
+.pagination_disabled{
+    opacity: 0  ;
+} */
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+  list-style: none;
+}
+
+.pagination li {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.pagination li.active {
+  background-color: black;
+  color: white;
+}
+
+
+
+
+
+
+
 @media (max-width:640px) {
     a.active{
         background-color: black;

@@ -1,6 +1,20 @@
 import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js"; // ✅ Import added
+import razorpay from "razorpay"
+
+
+const curreny = "inr";
+const deliveryCharge = 10
+
+const razorpayInstance = new razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET
+  // const orderData = {
+
+  // }
+})
 // pLace order
+
 const placeOrder = async (req, res) => {
   try {
     const { userId, items, amount, address } = req.body;
@@ -28,17 +42,29 @@ const placeOrder = async (req, res) => {
   }
 };
 
-export default placeOrder;
-
 
 // Placig Orders using COD Method
 const placeOrderStripe = async (req, res) => {
+  const { orderId, success, userId } = req.body;
+  try {
+    if (success === "true") {
+      await orderModel.findByIdAndUpdate(orderId, { payment: true })
+      await userModel.findByIdAndUpdate(userId, { cartData: {} })
+      res.json({ success: true });
 
+    } else {
+      await orderModel.findByIdAndDelete(orderId)
+      res.json({ success: false })
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
 }
 
 // Placing orders using Razorpay Method
 const placeOrderRazorpay = async (req, res) => {
-
+  
 }
 
 // All Orders data for Admin Pannel
@@ -70,8 +96,8 @@ const userOrders = async (req, res) => {
 // Update Order status from admin
 const updateStatus = async (req, res) => {
   try {
-    const { orderId, status, reason , payment} = req.body;
-    await orderModel.findByIdAndUpdate(orderId, { status, reason , payment  });
+    const { orderId, status, reason, payment } = req.body;
+    await orderModel.findByIdAndUpdate(orderId, { status, reason, payment });
     res.json({ success: true, message: "Status Updated" })
   } catch (error) {
     console.log(error);
@@ -83,13 +109,13 @@ const updateStatus = async (req, res) => {
 // Get Order Track result 
 const trackerOrder = async (req, res) => {
   try {
-    const {orderId} = req.body;
+    const { orderId } = req.body;
     console.log(orderId)
-    const trackData = await orderModel.findOne({_id: orderId});    
-    res.json({success: true, trackData});
+    const trackData = await orderModel.findOne({ _id: orderId });
+    res.json({ success: true, trackData });
   } catch (error) {
     console.log(error);
-    res.json({success: false, message: error.message})
+    res.json({ success: false, message: error.message })
   }
 }
 
