@@ -1,9 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
-
-// frontend
-// import { products } from "../assets/images/assets.js";
 import { useNavigate } from "react-router-dom";
 
 export const AppContext = createContext();
