@@ -4,6 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import bcrypt from "bcrypt";
+
 const generateAccessAndRefreshTokens = async (userId) => {
     try {
         const user = User.findById(userId);
@@ -50,6 +51,7 @@ const registerUser = asyncHandler(async (req, res) => {
         subject: "Welcome to Our Company",
         text: `Welcome to our company! You are now registered as a client.Your \nemail ID: ${email}`,
     } 
+    
     await transporter.sendMail(mailOptions);
     return res
         .status(201)

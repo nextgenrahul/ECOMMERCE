@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { loginUser, registerUser, logoutUser, sentVerifyOtp, verifyEmail, sendResetOtp, resetPassword, isAuthenticated } from "../controllers/auth.controller.js";
-import {verifyJWT, restrictTo} from "../middlewares/auth.middleware.js";
+import {verifyJWT} from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
