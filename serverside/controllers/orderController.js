@@ -1,22 +1,12 @@
 import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js"; // ✅ Import added
-import razorpay from "razorpay"
 
 
 const curreny = "inr";
 const deliveryCharge = 10
 
-const razorpayInstance = new razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET
-  // const orderData = {
-
-  // }
-})
-// pLace order
-
 const placeOrder = async (req, res) => {
-  try {
+  try { 
     const { userId, items, amount, address } = req.body;
 
     const orderData = {
