@@ -8,7 +8,8 @@ import { AppContext } from "../context/AppContext";
 const EmailVerify = () => {
   const navigate = useNavigate();
   const inputsRef = useRef([]);
-  const { backendUrl, userData, isLoggedin, getUserData } = useContext(AppContext);
+  const { backendUrl, userData, isLoggedin, getUserData } =
+    useContext(AppContext);
 
   const handleChange = (e, index) => {
     const value = e.target.value;
@@ -41,21 +42,25 @@ const EmailVerify = () => {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     const otp = inputsRef.current.map((el) => el.value).join("");
-
+    const verifyToken = localStorage.getItem("token");
     if (otp.length !== 6) {
       toast.error("Please enter a valid 6-digit OTP");
       return;
+    }
+    if(!verifyToken){
+      toast.error("Please enter a valid Token");
+      return
     }
 
     try {
       axios.defaults.withCredentials = true;
       const { data } = await axios.post(
-        backendUrl + "/api/auth/verify-account",
-        { otp }
+        backendUrl + "/api/user/verify-login-otp",
+        { otp, verifyToken }
       );
       if (data.success) {
         toast.success(data.message || "Email verified successfully");
-        await getUserData(); // refresh user data
+        await getUserData();
         navigate("/");
       } else {
         toast.error(data.message || "Verification failed");

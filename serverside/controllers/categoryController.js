@@ -1,20 +1,21 @@
 import CategoryModel from "../models/categoryModel.js";
-import categoryRouter from "../routes/categoryRoute.js";
 
 
 const getCategoryList = async (req, res) => {
     try {
         const data = await CategoryModel.find({});
-        if (data.length === 0) {
-            return res.json({ success: false, message: "Data not found" })
-        } else {
-            return res.json({ success: true, message: "Data fetched", data });
-        }
-    } catch (error) {
-        res.json({ success: false, message: error.message })
-    }
 
-}
+        if (!data || data.length === 0) {
+            return res.json({ success: false, message: "No categories found" });
+        }
+
+        return res.json({ success: true, message: "Data fetched successfully", data });
+
+    } catch (error) {
+        console.error("Error fetching categories:", error);
+        return res.json({ success: false, message: error.message });
+    }
+};
 
 const addCategory = async (req, res) => {
     const { category } = req.body;
@@ -53,11 +54,8 @@ const addSubcategory = async (req, res) => {
             }
             existingCategory.subCategories.push(subCategory)
         }
-
         await existingCategory.save();
-
         res.json({ success: true, message: "SubCategory created successfully" });
-
     } catch (error) {
         res.json({ success: false, message: error.message })
     }

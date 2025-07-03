@@ -5,7 +5,6 @@ import axios from 'axios'
 const Login = ({setToken}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   
 
   const onSubmitHandler = async (e) => {
@@ -23,6 +22,7 @@ const Login = ({setToken}) => {
         
     }
   };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-sm bg-white p-8 rounded-lg shadow-md">

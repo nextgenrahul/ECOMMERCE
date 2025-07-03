@@ -11,18 +11,14 @@ const TrackOrder = () => {
 
   const trackSubmitButton = async (e) => {
     e.preventDefault();
-
     if (orderId.trim() === "") {
       return toast.error("Please enter an order ID");
     }
-
     try {
       const response = await axios.post(`${backendUrl}/api/order/trackorder`, {
         orderId,
       });
-
       if (response.data.success) {
-        toast.success(response.data.message || "Order found!");
         setTrackOrder(response.data.trackData);
       } else {
         toast.warning(response.data.message || "Order not found.");

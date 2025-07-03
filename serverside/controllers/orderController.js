@@ -64,20 +64,25 @@ const placeOrderStripe = async (req, res) => {
 
 // Placing orders using Razorpay Method
 const placeOrderRazorpay = async (req, res) => {
-  
+
 }
 
 // All Orders data for Admin Pannel
 
 const allOrders = async (req, res) => {
   try {
-    const orders = await orderModel.find({})
-    res.json({ success: true, orders })
+    const orders = await orderModel.find({});
+    if (orders.length === 0) {
+      return res.json({ success: false, message: "No orders have been submitted yet" });
+    }
+
+    return res.json({ success: true, message: "Orders fetched successfully", orders });
+
   } catch (error) {
-    console.log(error)
-    res.json({ success: false, message: error.message })
+    console.error("Error fetching orders:", error);
+    return res.json({ success: false, message: error.message });
   }
-}
+};
 
 // User Order Data for frontend
 

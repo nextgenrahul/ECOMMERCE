@@ -6,7 +6,6 @@ import { AdminContextProvider } from "./context/AdminContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
-  
       <App />
   </BrowserRouter>
 );

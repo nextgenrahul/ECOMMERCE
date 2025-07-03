@@ -9,16 +9,14 @@ import MainNavbar from "./components/MainNavbar";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 function App() {
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-  console.log(clientId)
   return (
     <GoogleOAuthProvider clientId={clientId}>
-
-    <BrowserRouter>
-      <ToastContainer />
-      <AppContextProvider>
-        <AppRoutes />
-      </AppContextProvider>
-    </BrowserRouter>
+      <BrowserRouter>
+        <ToastContainer />
+        <AppContextProvider>
+          <AppRoutes />
+        </AppContextProvider>
+      </BrowserRouter>
     </GoogleOAuthProvider>
   );
 }

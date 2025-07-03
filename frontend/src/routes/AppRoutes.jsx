@@ -1,10 +1,6 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import Login from "../pages/Login";
-import SignUp from "../pages/Signup";
 import EmailVerify from "../pages/EmailVerify";
-import ResetPassword from "../pages/ResetPassword";
-import Home from "../pages/Home";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MainHome from "../pages/MainHome";
@@ -21,6 +17,9 @@ import Order from "../pages/Order";
 import NewLogin from "../pages/NewLogin";
 import TrackOrder from "../pages/TrackOrder";
 import Verify from "../pages/Verify";
+import NotFound from "../components/NotFound";
+import ResetPassword from "../pages/ResetPassword";
+import FloatingInput from "../pages/FloatingInput";
 
 const AppRoutes = () => {
   return (
@@ -29,11 +28,6 @@ const AppRoutes = () => {
       <MainNavbar />
       <SearchBar />
       <Routes>
-        {/* <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/email-verify" element={<EmailVerify />} />
-        <Route path="/reset-password" element={<ResetPassword />} />   */}
-        {/* Frontend Route */}
         <Route path="/login" element={<NewLogin />}/>
         <Route path="/" element={<MainHome />} />
         <Route path="/collection" element={<Collection />} />
@@ -45,7 +39,11 @@ const AppRoutes = () => {
         <Route path="/orders" element={<Order />} />
         <Route path="/trackOrder" element={<TrackOrder />} />
         <Route path="/verify" element={<Verify />} />
+        <Route path="/emailverify" element={<EmailVerify />}/>
+        <Route path="/resetpass" element={<ResetPassword />}/>
+        <Route path="/my" element={<FloatingInput />}/>
 
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />
     </div>

@@ -11,6 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Category from "./pages/Category";
 import { AdminContextProvider } from "./context/AdminContext";
 import SubCategory from "./pages/SubCategory";
+import OrderReturn from "./pages/OrderReturn";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export const currency = "$";
@@ -48,6 +49,9 @@ const App = () => {
                     path="/addSubCategories"
                     element={<SubCategory token={token} />}
                   />
+                  <Route path="/order-return" element={<OrderReturn />} />
+                  <Route path="/checker" element={<VerifyOtp />} />
+
                 </Routes>
               </div>
             </div>

@@ -6,11 +6,14 @@ export const AdminContext = createContext();
 
 export const AdminContextProvider = ({ children, token }) => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const [categoryAllData, setCategoryAllData] = useState([])
+  const [categoryAllData, setCategoryAllData] = useState([]);
   const getCategoryDataAll = async () => {
     try {
       const response = await axios.get(`${backendUrl}/api/category/list`, {
-        headers: { token },
+        headers: {
+          token
+        },
+        withCredentials: true,
       });
       if (response.data.success) {
         setCategoryAllData(response.data.data);
@@ -20,9 +23,10 @@ export const AdminContextProvider = ({ children, token }) => {
       toast.error("Failed to fetch categories");
     }
   };
+
   useEffect(() => {
-    getCategoryDataAll();
-  },[])
+    if (token) getCategoryDataAll();
+  }, [token]);
 
   const value = {
     backendUrl,

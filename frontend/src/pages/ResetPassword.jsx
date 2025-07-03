@@ -34,7 +34,7 @@ const ResetPassword = () => {
   const handlePaste = (e) => {
     e.preventDefault();
     const pasted = e.clipboardData.getData("text").trim();
-    if (/^\d{6}$/.test(pasted)) {
+    if (pasted.length === 6 && !isNaN(pasted)) {
       [...pasted].forEach((char, i) => {
         if (inputsRef.current[i]) {
           inputsRef.current[i].value = char;
