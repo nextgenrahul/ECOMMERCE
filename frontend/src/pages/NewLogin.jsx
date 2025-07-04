@@ -19,6 +19,7 @@ const NewLogin = () => {
       setCurrentState("Login")
       return;
     }
+                  
     try {
       if (otp && newPassword) {
         const res = await axios.post(

@@ -6,8 +6,10 @@ const curreny = "inr";
 const deliveryCharge = 10
 
 const placeOrder = async (req, res) => {
-  try { 
-    const { userId, items, amount, address } = req.body;
+  try {
+    const { items, amount, address } = req.body;
+    const userId = req.userId;
+
 
     const orderData = {
       userId,
@@ -35,7 +37,9 @@ const placeOrder = async (req, res) => {
 
 // Placig Orders using COD Method
 const placeOrderStripe = async (req, res) => {
-  const { orderId, success, userId } = req.body;
+  const { orderId, success } = req.body;
+  const userId = req.userId;
+
   try {
     if (success === "true") {
       await orderModel.findByIdAndUpdate(orderId, { payment: true })
@@ -78,7 +82,8 @@ const allOrders = async (req, res) => {
 
 const userOrders = async (req, res) => {
   try {
-    const { userId } = req.body;
+        const userId = req.userId;
+
     const orders = await orderModel.find({ userId })
     res.json({ success: true, orders })
   } catch (error) {

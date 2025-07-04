@@ -2,7 +2,8 @@ import React, { useContext, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { assets } from "../assets/images/assets.js";
 import { AppContext } from "../context/AppContext";
-
+import axios from "axios";
+import { toast } from "react-toastify";
 const MainNavbar = () => {
   const [visible, setVisible] = useState(false);
   const {
@@ -10,15 +11,26 @@ const MainNavbar = () => {
     setShowSearch,
     getCartCount,
     navigate,
-    token,
-    setToken,
     setCartItems,
+    isLoggedin,
+    backendUrl,
+    setIsLoggedin,
   } = useContext(AppContext);
-  const logout = () => {
-    navigate("/login");
-    localStorage.removeItem("token");
-    setToken("");
-    setCartItems({});
+  const logout = async () => {
+    try {
+      const res = await axios.get(backendUrl + "/api/user/logout", {
+        withCredentials: true,
+      });
+      if (res.data.success) {
+        navigate("/login");
+        setIsLoggedin(false);
+        setCartItems({});
+        toast.success("User Logout Successfully");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
   };
   return (
     <div className="flex items-center justify-between py-5 font-medium shadow-full">
@@ -55,19 +67,31 @@ const MainNavbar = () => {
         />
         <div className="group relative">
           <img
-            onClick={() => (token ? null : navigate("/login"))}
             className="w-5 cursor-pointer"
             src={assets.profile_icon}
             alt=""
           />
-          {token && (
+          {isLoggedin ? (
             <div className="group-hover:block hidden absolute dropdown-menu right-0 pt-4">
               <div className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded">
                 <p className="cursor-pointer hover:text-black">My Profile</p>
-                <p onClick={() => navigate("/orders")} className="cursor-pointer hover:text-black">Orders</p>
+                <p
+                  onClick={() => navigate("/orders")}
+                  className="cursor-pointer hover:text-black"
+                >
+                  Orders
+                </p>
                 <p onClick={logout} className="cursor-pointer hover:text-black">
                   Logout
                 </p>
+              </div>
+            </div>
+          ) : (
+            <div className="group-hover:block hidden absolute dropdown-menu right-0 pt-4">
+              <div className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded">
+                <Link to={"/login"} className="cursor-pointer hover:text-black">
+                  Login In
+                </Link>
               </div>
             </div>
           )}

@@ -15,6 +15,7 @@ const ResetPassword = () => {
   const [isEmailSent, setIsEmailSent] = useState("");
   const [otp, setOtp] = useState(0);
   const [isOtpSubmit, setIsOtpSubmit] = useState(false);
+  const [disabled, setDisabled] = useState(false);
 
   const handleChange = (e, index) => {
     const value = e.target.value;
@@ -45,16 +46,20 @@ const ResetPassword = () => {
   };
   const onSubmitEmail = async (e) => {
     e.preventDefault();
+    setDisabled(true);
+
     try {
       const { data } = await axios.post(
-        `${backendUrl}/api/auth/send-reset-otp`,
+        `${backendUrl}/api/user/send-reset-otp`,
         { email }
       );
-
+      setTimeout(() => setDisabled(false), 5000);
       if (data.success) {
         toast.success(data.message);
         setIsEmailSent(true);
+        setTimeout(() => setDisabled(false), 5000);
       } else {
+        setTimeout(() => setDisabled(false), 5000);
         toast.error(data.message || "Failed to send OTP");
       }
     } catch (error) {
@@ -75,7 +80,7 @@ const ResetPassword = () => {
     e.preventDefault();
     try {
       const { data } = await axios.post(
-        backendUrl + "/api/auth/reset-password",
+        backendUrl + "/api/user/reset-password",
         { email, otp, newPassword }
       );
       data.success ? toast.success(data.message) : toast.error(data.message);
@@ -84,18 +89,14 @@ const ResetPassword = () => {
       toast.error(data.message);
     }
   };
+
   return (
     <>
-      <div className="w-full flex justify-between items-center p-4 sm:p-6 sm:px-24 absolute top-0">
-        <Link to="/">
-          <img src={assets.logoIcon} alt="" />
-        </Link>
-      </div>
-      <div className="min-h-screen bg-white text-black flex justify-center items-center px-4">
+      <div className="mt-10 flex items-center justify-center bg-white">
         {!isEmailSent && (
           <form
             onSubmit={onSubmitEmail}
-            className="w-full max-w-sm border border-black rounded-lg p-6 shadow-md"
+            className="w-full max-w-sm rounded-lg p-6 "
           >
             <h1 className="text-2xl font-semibold mb-2 text-center">
               Reset Password
@@ -103,28 +104,30 @@ const ResetPassword = () => {
             <p className="text-sm text-center mb-4">
               Enter your registered email address
             </p>
-
-            <div className="flex items-center border border-gray-300 rounded px-3 py-2 mb-4">
+            <div className="w-full flex justify-center items-center">
               <img
-                src={assets.mail_icon}
+                src={assets.main_icon}
                 alt="mail icon"
-                className="w-5 h-5 mr-2"
+                className="w-10 h-10 mr-2"
               />
+            </div>
+            <div className="flex items-center rounded px-3 py-2 mb-4">
               <input
                 type="email"
                 placeholder="Email Id"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full outline-none text-black"
+                className="w-full p-2 border-2 border-gray-400 rounded focus:outline-none"
                 required
               />
             </div>
 
             <button
               type="submit"
-              className="w-full bg-black text-white py-2 rounded hover:bg-gray-900 transition-all"
+              disabled={disabled}
+              className="w-full bg-[#FF583E] text-white py-2 rounded bg-[#FF583E]hover:bg-[#ff3e3e] transition-all"
             >
-              Send Reset Link
+              {disabled ? "Please wait..." : "Send Reset Link"}
             </button>
           </form>
         )}
@@ -132,8 +135,9 @@ const ResetPassword = () => {
 
         {!isOtpSubmit && isEmailSent && (
           <form
+            autocomplete="off"
             onSubmit={onSubmitOtp}
-            className="w-full max-w-sm border border-black rounded-lg p-6 shadow-md"
+            className="w-full max-w-sm rounded-lg p-6"
           >
             <h1 className="text-2xl font-semibold mb-2 text-center">
               Reset Password Otp
@@ -155,14 +159,14 @@ const ResetPassword = () => {
                     onChange={(e) => handleChange(e, index)}
                     onKeyDown={(e) => handleKeyDown(e, index)}
                     onPaste={handlePaste}
-                    className="w-12 h-12 border border-black text-black text-center text-xl rounded focus:outline-none"
+                    className="w-12 h-12 border-2 border-gray-400 text-black text-center text-xl rounded focus:outline-none appearance-none "
                   />
                 ))}
             </div>
 
             <button
               type="submit"
-              className="w-full bg-black text-white py-2 rounded hover:bg-gray-900 transition-all"
+              className="w-full text-white py-2 rounded bg-[#FF583E] hover:bg-[#ff3e3e] transition-all"
             >
               Submit
             </button>
@@ -172,8 +176,9 @@ const ResetPassword = () => {
         {/* Enter New Password */}
         {isOtpSubmit && isEmailSent && (
           <form
-          onSubmit={onSubmitNewPassword}
-          className="w-full max-w-sm border border-black rounded-lg p-6 shadow-md">
+            onSubmit={onSubmitNewPassword}
+            className="w-full max-w-sm rounded-lg p-6"
+          >
             <h1 className="text-2xl font-semibold mb-2 text-center">
               New Password
             </h1>
@@ -181,7 +186,7 @@ const ResetPassword = () => {
               Enter the new Password Below
             </p>
 
-            <div className="flex items-center border border-gray-300 rounded px-3 py-2 mb-4">
+            <div className="flex items-center border-2 border-gray-400 rounded px-3 py-2 mb-4">
               <img
                 src={assets.lock_icon}
                 alt="mail icon"
@@ -199,7 +204,7 @@ const ResetPassword = () => {
 
             <button
               type="submit"
-              className="w-full bg-black text-white py-2 rounded hover:bg-gray-900 transition-all"
+              className="w-full bg-[#FF583E] hover:bg-[#ff3e3e] text-white py-2 rounded transition-all"
             >
               Submit
             </button>

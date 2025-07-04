@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 
 const authUser = async (req, res, next) => {
-  const { token } = req.headers;
+  const token = req.cookies?.accessToken;
 
   if (!token) {
     return res.status(401).json({
@@ -11,12 +11,13 @@ const authUser = async (req, res, next) => {
   }
   try {
     const token_decode = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    req.body.userId = token_decode.id;
+    req.userId = token_decode.id;
+
     next();
 
   } catch (error) {
     console.error("JWT Error:", error);
-    res.json({ 
+    res.json({
       success: false,
       message: "Token is invalid or expired",
     });

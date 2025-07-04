@@ -2,10 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
-
 export const AppContext = createContext();
-
 export const AppContextProvider = ({ children }) => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [isLoggedin, setIsLoggedin] = useState(false);
@@ -18,19 +15,7 @@ export const AppContextProvider = ({ children }) => {
   const [showSearch, setShowSearch] = useState(true);
   const [cartItems, setCartItems] = useState({});
   const [products, setProducts] = useState([]);
-  const [token, setToken] = useState("");
   const [categoryAllData, setCategoryAllData] = useState([]);
-
-  const isTokenExpired = (token) => {
-    if (!token) return true;
-    try {
-      const decoded = jwtDecode(token);
-      const currentTime = Date.now() / 1000;
-      return decoded.exp < currentTime;
-    } catch (error) {
-      return true;
-    }
-  };
 
   const getUserData = async () => {
     if (!backendUrl) return toast.error("Backend URL is not defined.");
@@ -41,9 +26,7 @@ export const AppContextProvider = ({ children }) => {
         setIsLoggedin(true);
         setUserData(data.data);
         localStorage.setItem("isLoggedin", "true");
-      } else {
-        toast.error(data.message || "Could not retrieve user data");
-      }
+      } 
     } catch (error) {
       toast.error(
         error?.response?.data?.message || "Failed to fetch user data"
@@ -59,17 +42,14 @@ export const AppContextProvider = ({ children }) => {
       cartData[itemId] = { [size]: 1 };
     }
     setCartItems(cartData);
-    if (token) {
-      try {
-        await axios.post(
-          backendUrl + "/api/cart/add",
-          { itemId, size },
-          { headers: { token } }
-        );
-      } catch (error) {
-        console.log(error);
-        toast.error(error.message);
-      }
+    try {
+      await axios.post(
+        backendUrl + "/api/cart/add",
+        { itemId, size },
+        { withCredentials: true }
+      );
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -90,31 +70,26 @@ export const AppContextProvider = ({ children }) => {
     let cartData = structuredClone(cartItems);
     cartData[itemId][size] = quantity;
     setCartItems(cartData);
-    if (token) {
-      try {
-        await axios.post(
-          backendUrl + "/api/cart/update",
-          { itemId, size, quantity },
-          { headers: { token } }
-        );
-      } catch (error) {
-        console.log(error);
-        toast.error(error.message);
-      }
-    }
-  };
-
-  const getUserCart = async (token) => {
     try {
-      const response = await axios.post(
-        backendUrl + "/api/cart/get",
-        {},
-        { headers: { token } }
+      await axios.post(
+        backendUrl + "/api/cart/update",
+        { itemId, size, quantity },
+        { withCredentials: true }
       );
-      setCartItems(response.data.cartData);
     } catch (error) {
       console.log(error);
       toast.error(error.message);
+    }
+  };
+
+  const getUserCart = async () => {
+    try {
+      const response = await axios.get(backendUrl + "/api/cart/get", {
+        withCredentials: true,
+      });
+      setCartItems(response.data.cartData);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -123,8 +98,6 @@ export const AppContextProvider = ({ children }) => {
       const response = await axios.get(backendUrl + "/api/product/list");
       if (response.data.success) {
         setProducts(response.data.products);
-      } else {
-        toast.error(response.data.message);
       }
     } catch (error) {
       console.log(error);
@@ -135,13 +108,14 @@ export const AppContextProvider = ({ children }) => {
   useEffect(() => {
     const init = async () => {
       await getProductsData();
-      const token = localStorage.getItem("token");
-      if (!token || isTokenExpired(token)) {
-        localStorage.removeItem("token");
-        // navigate("/login");
-      } else {
-        getUserCart(token);
-        setToken(token);
+      const res = await axios.get(backendUrl + "/api/user/auth-check", {
+        withCredentials: true,
+      });
+      if (res.data?.loggedIn) {
+        setIsLoggedin(true);
+        console.log("User is logged in");
+      }else{
+        console.log("User is not logged in");
       }
     };
     init();
@@ -153,7 +127,7 @@ export const AppContextProvider = ({ children }) => {
       let itemInfo = products.find((product) => product._id === items);
       for (const item in cartItems[items]) {
         if (cartItems[items][item] > 0) {
-          totalAmount += itemInfo.price * cartItems[items][item];
+          totalAmount += itemInfo?.price * cartItems[items][item];
         }
       }
     }
@@ -163,7 +137,7 @@ export const AppContextProvider = ({ children }) => {
   const getCategoryDataAll = async () => {
     try {
       const response = await axios.get(`${backendUrl}/api/category/list`, {
-        headers: { token },
+        withCredentials: true,
       });
       if (response.data.success) {
         setCategoryAllData(response.data.data);
@@ -176,6 +150,7 @@ export const AppContextProvider = ({ children }) => {
 
   useEffect(() => {
     getCategoryDataAll();
+    getUserCart();
   }, []);
 
   const value = {
@@ -199,9 +174,8 @@ export const AppContextProvider = ({ children }) => {
     getCartCount,
     updateQuantity,
     getCartAmount,
-    token,
-    setToken,
     categoryAllData,
+    getUserCart,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -20,6 +20,7 @@ import Verify from "../pages/Verify";
 import NotFound from "../components/NotFound";
 import ResetPassword from "../pages/ResetPassword";
 import FloatingInput from "../pages/FloatingInput";
+import Login from "../pages/Login";
 
 const AppRoutes = () => {
   return (
@@ -28,7 +29,7 @@ const AppRoutes = () => {
       <MainNavbar />
       <SearchBar />
       <Routes>
-        <Route path="/login" element={<NewLogin />}/>
+        <Route path="/login" element={<Login />}/>
         <Route path="/" element={<MainHome />} />
         <Route path="/collection" element={<Collection />} />
         <Route path="/contact" element={<Contact />} />
@@ -42,8 +43,8 @@ const AppRoutes = () => {
         <Route path="/emailverify" element={<EmailVerify />}/>
         <Route path="/resetpass" element={<ResetPassword />}/>
         <Route path="/my" element={<FloatingInput />}/>
-
         <Route path="*" element={<NotFound />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
       <Footer />
     </div>

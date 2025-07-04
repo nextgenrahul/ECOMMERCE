@@ -40,7 +40,7 @@ const PlaceOrder = () => {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
-      if (!products || !cartItems || !token) {
+      if (!products || !cartItems ) {
         toast.error("Missing required data");
         return;
       }
@@ -71,7 +71,9 @@ const PlaceOrder = () => {
           const response = await axios.post(
             backendUrl + "/api/order/place",
             orderData,
-            { headers: { token } }
+            {
+              withCredentials: true, 
+            }
           );
           if (response.data.success) {
             setCartItems({});

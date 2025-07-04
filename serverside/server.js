@@ -3,9 +3,11 @@ import cors from "cors";
 import 'dotenv/config';
 import connectDB from "./config/mongodb.js";
 import connectCloudinary from "./config/cloudinary.js";
+import cookieParser from "cookie-parser";
 
 // App Config
 const app = express();
+app.use(cookieParser());
 const port = process.env.PORT || 4000;
 
 // Middlewares

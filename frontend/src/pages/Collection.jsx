@@ -24,6 +24,15 @@ const Collection = () => {
       setCategory((prev) => prev.filter((item) => item !== e.target.value));
     } else {
       setCategory((prev) => [...prev, e.target.value]);
+      setSubCategory()
+    }
+  };
+
+  const handleSubCategoryChange = async () => {
+    if (subCategory.includes(e.target.value)) {
+      setSubCategory((prev) => prev.filter((item) => item !== e.target.value));
+    } else {
+      setSubCategory((prev) => [...prev, e.target.value]);
     }
   };
 
@@ -51,7 +60,6 @@ const Collection = () => {
     productsCopy = productsCopy.filter(
       (item) => item.price >= localValues[0] && item.price <= localValues[1]
     );
-
     setFilterProduct(productsCopy);
   };
 
@@ -164,8 +172,8 @@ const Collection = () => {
               const { key, ...restProps } = props;
               return (
                 <div
-                  key={key} 
-                  {...restProps} 
+                  key={key}
+                  {...restProps}
                   style={{
                     ...props.style,
                     height: "20px",

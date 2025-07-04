@@ -50,7 +50,7 @@ const App = () => {
                     element={<SubCategory token={token} />}
                   />
                   <Route path="/order-return" element={<OrderReturn />} />
-                  <Route path="/checker" element={<VerifyOtp />} />
+                  {/* <Route path="/checker" element={<VerifyOtp />} /> */}
 
                 </Routes>
               </div>

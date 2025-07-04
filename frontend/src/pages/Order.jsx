@@ -5,7 +5,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 const Order = () => {
-  const { backendUrl, token, currency, products } = useContext(AppContext);
+  const { backendUrl, currency, products } = useContext(AppContext);
 
   const [reason, setReason] = useState("");
   const [orderMainAllData, setOrderMainAllData] = useState([]);
@@ -14,11 +14,12 @@ const Order = () => {
 
   const loadOrderData = async () => {
     try {
-      if (!token) return;
       const response = await axios.post(
         backendUrl + "/api/order/userorders",
         {},
-        { headers: { token } }
+        {
+          withCredentials: true,
+        }
       );
       if (response.data.success) {
         setOrderMainAllData(response.data.orders.reverse());
@@ -60,7 +61,7 @@ const Order = () => {
 
   useEffect(() => {
     loadOrderData();
-  }, [token]);
+  }, []);
 
   useEffect(() => {
     if (reason.trim() !== "") {
@@ -129,8 +130,7 @@ const Order = () => {
                     <p>Reason: {order.returnOrder.reason}</p>
                     <p>Comments: {order.returnOrder.comments}</p>
                   </div>
-                ): null
-               }
+                ) : null}
               </div>
 
               <div className="flex flex-col sm:flex-row gap-2">

@@ -20,7 +20,7 @@ const Signup = () => {
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-black mb-2" htmlFor="name">
-              Full Name
+              Full Name 
             </label>
             <input
               type="text"

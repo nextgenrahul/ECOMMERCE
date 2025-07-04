@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library"
 import userModel from "../models/userModel.js";
 import transporter from "../config/nodemailer.js";
+import { getLogger } from "nodemailer/lib/shared/index.js";
 
 // Token
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -28,6 +29,15 @@ const generateAccessAndRefreshTokens = async (userId) => {
   }
 };
 
+const check_auth = async (req, res) => {
+  const token = req.cookies.accessToken;
+  if (!token) return res.status(401).json({ loggedIn: false });
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET , (err, user) => {
+    if (err) return res.status(401).json({ loggedIn: false });
+    return res.json({ loggedIn: true, user });
+  });
+}
+
 // Route for user register
 const registerUser = async (req, res) => {
   try {
@@ -45,7 +55,8 @@ const registerUser = async (req, res) => {
     if (!validator.isEmail(email)) {
       return res.json({ success: false, message: "Please enter a valid email." });
     }
-    if (password.length < 8) {
+
+    if (password.length < 4) {
       return res.json({ success: false, message: "Please enter a strong password." });
     }
 
@@ -190,7 +201,6 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log(email, password)
     if ([email, password].some((field) => !field?.trim())) {
       return res.json({ success: false, message: "All fields are required" });
     }
@@ -221,6 +231,7 @@ const loginUser = async (req, res) => {
     const loggedInUser = await userModel.findById(user._id).select(
       "-password -refreshToken -verifyOtp -verifyOtpExpireAt -resetOtp -resetOtpExpireAt"
     );
+    
 
     return res
       .cookie("accessToken", accessToken, options)
@@ -324,19 +335,22 @@ const resetPassword = async (req, res) => {
   }
 }
 
+
+
 // Logout
 const logOut = async (req, res) => {
   try {
-    const { refreshToken } = req.body;
+    const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
       return res.json({ success: false, message: "No token provided" });
     }
-    const user = await userModel.findOne({ refreshToken });
+    const user = await userModel.findOne({ refreshToken:refreshToken });
     if (!user) {
       res.clearCookie("accessToken");
       res.clearCookie("refreshToken");
       return res.json({ success: true, message: "Logged out Without token." });
     }
+
     user.refreshToken = null;
     user.isAccountVerified = false;
     await user.save({ validateBeforeSave: false });
@@ -348,6 +362,7 @@ const logOut = async (req, res) => {
     res.json({ success: false, message: "Logout failed" })
   }
 };
+
 // Route for admin login
 const adminLogin = async (req, res) => {
   try {
@@ -437,6 +452,7 @@ export {
   registerUser,
   adminLogin,
   googleLogin,
-   sendResetOtp,
-  resetPassword
+  sendResetOtp,
+  resetPassword,
+  check_auth
 };
