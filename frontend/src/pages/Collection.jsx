@@ -24,21 +24,11 @@ const Collection = () => {
       setCategory((prev) => prev.filter((item) => item !== e.target.value));
     } else {
       setCategory((prev) => [...prev, e.target.value]);
-      setSubCategory()
-    }
-  };
-
-  const handleSubCategoryChange = async () => {
-    if (subCategory.includes(e.target.value)) {
-      setSubCategory((prev) => prev.filter((item) => item !== e.target.value));
-    } else {
-      setSubCategory((prev) => [...prev, e.target.value]);
     }
   };
 
   const applyFilter = () => {
     let productsCopy = products?.slice();
-
     if (showSearch && search) {
       productsCopy = productsCopy.filter((item) =>
         item.name.toLowerCase().includes(search.toLowerCase())
@@ -60,6 +50,7 @@ const Collection = () => {
     productsCopy = productsCopy.filter(
       (item) => item.price >= localValues[0] && item.price <= localValues[1]
     );
+
     setFilterProduct(productsCopy);
   };
 
@@ -79,8 +70,19 @@ const Collection = () => {
   };
 
   useEffect(() => {
-    applyFilter();
+    if (products.length > 0) {
+      applyFilter();
+      localStorage.setItem("selectedCategories", JSON.stringify(category));
+    }
   }, [category, subCategory, search, showSearch, products, localValues]);
+
+  useEffect(() => {
+    const savedCategories =
+      JSON.parse(localStorage.getItem("selectedCategories")) || [];
+    if (savedCategories.length > 0) {
+      setCategory(savedCategories);
+    }
+  }, []);
 
   useEffect(() => {
     sortProduct();
@@ -120,6 +122,7 @@ const Collection = () => {
                   name="category"
                   value={item.category}
                   onChange={toggleCategory}
+                  checked={category.includes(item.category || "")}
                 />
                 {item.category}
               </label>
