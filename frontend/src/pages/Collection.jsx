@@ -11,22 +11,65 @@ const Collection = () => {
   const [step] = useState(50);
   const { products, search, showSearch, categoryAllData } =
     useContext(AppContext);
-
   const [localValues, setLocalValues] = useState([min, max]);
   const [showFilter, setShowFilter] = useState(false);
   const [filterProducts, setFilterProduct] = useState([]);
   const [category, setCategory] = useState([]);
   const [subCategory, setSubCategory] = useState([]);
+  const [subObj, setSubObj] = useState([]);
   const [sortType, setSortType] = useState("relevent");
 
+  const getSubCategories = (categoryName) => {
+    const match = categoryAllData.find(
+      (item) => item.category.toLowerCase() === categoryName.toLowerCase()
+    );
+    return match?.subCategories || [];
+  };
+
   const toggleCategory = (e) => {
-    if (category.includes(e.target.value)) {
-      setCategory((prev) => prev.filter((item) => item !== e.target.value));
+    const value = e.target.value;
+
+    if (category.includes(value)) {
+      setCategory((prev) => prev.filter((item) => item !== value));
+      setSubObj((prev) => {
+        const copy = { ...prev };
+        delete copy[value];
+        return copy;
+      });
     } else {
-      setCategory((prev) => [...prev, e.target.value]);
+      setCategory((prev) => [...prev, value]);
+      setSubObj((prev) => ({
+        ...prev,
+        [value]: getSubCategories(value),
+      }));
     }
   };
 
+  // const toggleCategory = (e) => {
+  //   const value = e.target.value;
+
+  //   if (category.includes(value)) {
+  //     setCategory((prev) => prev.filter((item) => item !== value));
+  //     setSubObj((prev) => {
+  //       const copy = { ...prev };
+  //       delete copy[value];
+  //       return copy;
+  //     });
+  //   } else {
+  //     setCategory((prev) => [...prev, value]);
+  //     setSubObj((prev) => ({
+  //       ...prev,
+  //       [value]: getSubCategories(value),
+  //     }));
+  //   }
+  // };
+
+  // const getSubCategories = (categoryName) => {
+  //   const match = categoryAllData.find(
+  //     (item) => item.category === categoryName
+  //   );
+  //   return match?.subCategory || [];
+  // };
   const applyFilter = () => {
     let productsCopy = products?.slice();
     if (showSearch && search) {
@@ -39,6 +82,7 @@ const Collection = () => {
       productsCopy = productsCopy.filter((item) =>
         category.includes(item.category)
       );
+      console.log(subObj);
     }
 
     if (subCategory.length > 0) {
@@ -69,18 +113,26 @@ const Collection = () => {
     }
   };
 
+  // const handleSubCategoryChange = (e) => {
+
+  // }
+
   useEffect(() => {
     if (products.length > 0) {
       applyFilter();
       localStorage.setItem("selectedCategories", JSON.stringify(category));
+      localStorage.setItem("selectedSubCategories", JSON.stringify(subCategory));
     }
   }, [category, subCategory, search, showSearch, products, localValues]);
 
   useEffect(() => {
     const savedCategories =
       JSON.parse(localStorage.getItem("selectedCategories")) || [];
+    const savedSubCategories =
+      JSON.parse(localStorage.getItem("selectedSubCategories")) || [];
     if (savedCategories.length > 0) {
       setCategory(savedCategories);
+      setSubCategory(savedSubCategories);
     }
   }, []);
 
@@ -129,6 +181,46 @@ const Collection = () => {
             ))}
           </div>
         </div>
+        {/* Sub Category */}
+        {Object.keys(subObj).length === 0 ? "" : (
+          <div
+            className={`border border-gray-300 pl-5 py-3 mt-6 ${
+              showFilter ? "" : "hidden"
+            } sm:block`}
+          >
+            <p className="mb-3 text-sm font-medium">Sub Category</p>
+            <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
+              {Object.entries(subObj)?.map(([categoryName, subCategories]) => (
+                <div key={categoryName}>
+                  <p className="font-semibold">{categoryName}</p>
+                  {subCategories.map((sub, index) => (
+                    <label
+                      key={index}
+                      className="flex items-center gap-2 cursor-pointer ml-3"
+                    >
+                      <input
+                        type="checkbox"
+                        name="subCategory"
+                        value={sub}
+                        onChange={(e) => {
+                          if (subCategory.includes(e.target.value)) {
+                            setSubCategory((prev) =>
+                              prev.filter((item) => item !== e.target.value)
+                            );
+                          } else {
+                            setSubCategory((prev) => [...prev, e.target.value]);
+                          }
+                        }}
+                        checked={subCategory.includes(sub)}
+                      />
+                      {sub}
+                    </label>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Price Range Filter */}
         <div
