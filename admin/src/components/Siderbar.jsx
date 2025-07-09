@@ -47,6 +47,13 @@ const Siderbar = () => {
           <img className="w-5 h-5" src={assets.order_return} alt="" />
           <p className="hidden md:block">Return Order</p>
         </NavLink>
+        <NavLink
+          className="flex items-center gap-3 border border-gray-300 border-r-0 px-3 py-2 relative"
+          to="/addColor"
+        >
+          <img className="w-5 h-5" src={assets.color_wheel} alt="" />
+          <p className="hidden md:block">Add Color</p>
+        </NavLink>
       </div>
     </div>
   );

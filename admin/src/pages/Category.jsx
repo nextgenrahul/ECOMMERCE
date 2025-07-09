@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 const Category = ({ token }) => {
   const [category, setCategory] = useState("");
   const [categoryData, setCategoryData] = useState([]);
-  const { backendUrl } = useContext(AdminContext);
+  const { backendUrl , setLoading} = useContext(AdminContext);
 
   const capitalizeFirst = (str) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -14,6 +14,7 @@ const Category = ({ token }) => {
 
   const getCategoryData = async () => {
     try {
+      setLoading(true)
       const response = await axios.get(`${backendUrl}/api/category/list`, {
         headers: { token },
       });
@@ -23,6 +24,8 @@ const Category = ({ token }) => {
     } catch (error) {
       console.error(error);
       toast.error("Failed to fetch categories");
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -36,6 +39,7 @@ const Category = ({ token }) => {
       toast.error("Category must be entered");
       return;
     }
+    setLoading(true)
     try {
       const payload = {
         category: capitalizeFirst(category),
@@ -55,6 +59,8 @@ const Category = ({ token }) => {
     } catch (error) {
       console.error("Error while adding category:", error);
       toast.error("Something went wrong!");
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -63,13 +69,14 @@ const Category = ({ token }) => {
       toast.error("Id is required");
       return;
     }
+    setLoading(true)
     try {
       const response = await axios.delete(
         `${backendUrl}/api/category/delete/${id}`,
         { headers: { token } }
       );
       if (response.data.success) {
-        setCategoryData((prev) => prev.filter((c) => c._id !== id)); // ✅ removes from UI instantly
+        setCategoryData((prev) => prev.filter((c) => c._id !== id)); 
 
         toast.success(response.data.message);
       } else {
@@ -78,6 +85,8 @@ const Category = ({ token }) => {
     } catch (error) {
       console.error("Error while deleting category:", error);
       toast.error("Something went wrong!");
+    }finally{
+      setLoading(false)
     }
   };
 

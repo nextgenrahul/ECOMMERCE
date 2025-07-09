@@ -12,17 +12,46 @@ import Category from "./pages/Category";
 import { AdminContextProvider } from "./context/AdminContext";
 import SubCategory from "./pages/SubCategory";
 import OrderReturn from "./pages/OrderReturn";
+import AddColor from "./pages/AddColor";
+import { useLocation } from "react-router-dom";
+
+// 👉 Import your loader
+import Loader from "./components/Loader";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export const currency = "$";
+
 const App = () => {
+  const location = useLocation();
+  const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(
     localStorage.getItem("token") ? localStorage.getItem("token") : ""
   );
+  
+  useEffect(() => {
+    setLoading(true);
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
 
   useEffect(() => {
     localStorage.setItem("token", token);
   }, [token]);
+
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     setLoading(false);
+  //   }, 1000);
+  //   return () => clearTimeout(timer);
+  // }, []);
+
+  if (loading) {
+    return <Loader />;
+  }
+
   return (
     <div className="bg-gray-50 min-h-screen">
       <ToastContainer />
@@ -50,8 +79,10 @@ const App = () => {
                     element={<SubCategory token={token} />}
                   />
                   <Route path="/order-return" element={<OrderReturn />} />
-                  {/* <Route path="/checker" element={<VerifyOtp />} /> */}
-
+                  <Route
+                    path="/addColor"
+                    element={<AddColor token={token} />}
+                  />
                 </Routes>
               </div>
             </div>

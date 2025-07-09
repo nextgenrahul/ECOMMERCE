@@ -5,7 +5,8 @@ import {
     removeProduct,
     singleProduct,
     addProduct,
-    getPaginateProduct
+    getPaginateProduct,
+    getAllGroupIdData
 } from "../controllers/productController.js";
 
 import upload from "../middleware/multer.js";
@@ -30,8 +31,8 @@ productRouter.post(
 productRouter.post("/remove", adminAuth, removeProduct);
 productRouter.post("/single", singleProduct);
 productRouter.get("/list", listProduct);
+
+productRouter.get("/getAllGroupIdData", getAllGroupIdData)
 productRouter.get("/paginateProducts", getPaginateProduct)
-
-
 
 export default productRouter;

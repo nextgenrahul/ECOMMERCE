@@ -18,11 +18,12 @@
     "axios": "^1.10.0",
     "flowbite": "^3.1.2",
     "jwt-decode": "^4.0.0",
+    "lottie-react": "^2.4.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-paginate": "^8.3.0",
     "react-range": "^1.10.0",
-    "react-router-dom": "^7.6.2",
+    "react-router-dom": "^7.6.3",
     "react-toastify": "^11.0.5",
     "slugify": "^1.6.6",
     "tailwindcss": "^4.1.8"

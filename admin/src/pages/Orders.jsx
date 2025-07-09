@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { backendUrl, currency } from "../App";
 import { assets } from "../assets/admin_assets/assets.js";
+import { AdminContext } from "../context/AdminContext.jsx";
 
 const Orders = ({ token }) => {
 
@@ -10,11 +11,12 @@ const Orders = ({ token }) => {
   const [statusHan, setStatusHan] = useState("");
   const [reason, setReason] = useState("");
   const [orderUpdates, setOrderUpdates] = useState({});
-
+  const {setLoading} = useContext(AdminContext)
   const fetchAllOrders = async () => {
     if (!token) return;
 
     try {
+      setLoading(true)
       const response = await axios.post(
         `${backendUrl}/api/order/list`,
         {},
@@ -28,6 +30,8 @@ const Orders = ({ token }) => {
       }
     } catch (error) {
       toast.error(error.message);
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -37,6 +41,7 @@ const Orders = ({ token }) => {
     // if (!status || reason) {
     //   return toast.error("Please select status and provide reason.");
     // }
+    setLoading(true)
 
     try {
 
@@ -65,6 +70,8 @@ const Orders = ({ token }) => {
     } catch (error) {
       console.error(error);
       toast.error("Something went wrong.");
+    } finally{
+      setLoading(false)
     }
   };
 

@@ -1,38 +1,74 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import { assets } from "../assets/images/assets";
 import RelatedProduct from "../components/RelatedProduct";
+import { toast } from "react-toastify";
+import axios from "axios";
 const Product = () => {
-  const { productId } = useParams();
-  const { products, currency, addToCart } = useContext(AppContext);
+  const { slug } = useParams();
+  const { products, currency, addToCart, backendUrl } = useContext(AppContext);
   const [productData, setProductData] = useState(false);
   const [image, setImage] = useState("");
   const [size, setSize] = useState("");
+  const [activeProductId, setActiveProductId] = useState(null);
+  const [selectedSize, setSelectedSize] = useState(null);
+  const [groupColors, setGroupColors] = useState([]);
+  const navigate = useNavigate();
+  console.log(selectedSize)
   const fetchProductData = async () => {
-    const foundProduct = products.find((item) => item._id === productId);
+    const foundProduct = products.find((item) => item.slug === slug);
     if (foundProduct) {
       setProductData(foundProduct);
       setImage(foundProduct.image[0]);
     }
   };
+  const productNavigate = (slug) => {
+    navigate(`/product/${slug}`);
+  };
 
-  useEffect(() => {
-    fetchProductData();
-  }, [productId, products]);
+  const fetct_color_relation = async (groupIdMain) => {
+    const groupId = groupIdMain;
+    try {
+      if (groupId) {
+        const res = await axios.get(
+          backendUrl + "/api/product/getAllGroupIdData",
+          {
+            params: { groupId },
+          }
+        );
+
+        if (res.data.success) {
+          setGroupColors(res.data.data);
+        } else {
+          console.log("No data:", res.data.message);
+        }
+      }
+    } catch (error) {}
+  };
+
+useEffect(() => {
+  fetchProductData(); 
+}, [slug, products]);
+
+useEffect(() => {
+  if (productData?.productGroupId) {
+    fetct_color_relation(productData.productGroupId);
+  }
+}, [productData?.productGroupId]);
 
   return productData ? (
     <div className="border-t pt-10 transition-opacity ease-in duration-500 opacity-100">
       {/* Product Data */}
       <div className="flex gap-12 sm:gap-12 flex-col sm:flex-row">
         {/* Product Image */}
-        <div className="flex-1 flex flex-col-reverse gap-3 sm:flex-row">
+        <div className="flex-1 overflow-hidden flex flex-col-reverse gap-3 sm:flex-row">
           <div className="flex sm:flex-col overflow-x-auto sm:overflow-y-scroll justify-between sm:justify-normal sm:w-[18.7%] w-full">
             {productData.image.map((item, index) => (
               <img
                 src={item}
                 key={index}
-                onClick={() => setImage(item)} // ✅ Click to change main image
+                onClick={() => setImage(item)}
                 className="w-[24%] sm:w-full sm:mb-3 flex-shrink-0 cursor-pointer"
               />
             ))}
@@ -60,21 +96,76 @@ const Product = () => {
             {productData.description}
           </p>
           {productData.category === "Clothing" && (
-            <div className="flex flex-col gap-4 my-8">
-              <p>Select Size </p>
-              <div className="flex gap-2">
-                {productData.sizes?.map((item, index) => (
-                  <button
-                    onClick={() => setSize(item)}
-                    className={`border border-gray-50  py-2 px-4 bg-gray-100 ${
-                      item === size ? "border-orange-500" : ""
-                    }`}
-                    key={index}
-                  >
-                    {item}
-                  </button>
-                ))}
+            <div className="my-6">
+              <p className="text-base font-medium mb-2">Select Size</p>
+              <div className="flex flex-wrap gap-3">
+                {productData.sizes?.map((item, index) => {
+                  const [size, stock] = Object.entries(item)[0];
+                  const isSelected = selectedSize?.[size] !== undefined;
+
+                  return (
+                    <div
+                      key={index}
+                      onClick={() => setSelectedSize(item)}
+                      className={`w-24 p- rounded shadow border cursor-pointer hover:shadow-md transition
+              ${isSelected ? "border-orange-500 bg-orange-50" : "bg-white"}`}
+                    >
+                      <p className="text-sm font-semibold text-center">
+                        {size}
+                      </p>
+                      <p className="text-xs text-gray-500 text-center">
+                        Stock: {stock}
+                      </p>
+                    </div>
+                  );
+                })}
               </div>
+            </div>
+          )}
+
+          {groupColors && (
+            <div className="my-6">
+              <h2 className="text-lg font-semibold mb-4 text-gray-800">
+                Color Group Products
+              </h2>
+
+              {groupColors.length === 0 ? (
+                <p className="text-gray-500">
+                  No products found for this group.
+                </p>
+              ) : (
+                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-2">
+                  {groupColors.map((item) => (
+                    <div
+                      key={item.productId}
+                      onClick={() => {
+                        productNavigate(item.slug);
+                        setActiveProductId(item.productId);
+                      }}
+                      className={`flex items-center gap-4 p-1 bg-white rounded shadow-sm cursor-pointer transition ${
+                        activeProductId === item.productId || slug === item.slug 
+                          ? "border-2 border-orange-500"
+                          : "border"
+                      }`}
+                    >
+                      <div
+                        className="w-6 h-6 rounded-full border"
+                        style={{ backgroundColor: item.colorHex }}
+                        title={item.colorName}
+                      ></div>
+
+                      <div>
+                        <p className="font-medium text-gray-700">
+                          {item.productName}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {item.colorName}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 

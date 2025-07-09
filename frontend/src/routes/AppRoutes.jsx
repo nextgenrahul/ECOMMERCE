@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import EmailVerify from "../pages/EmailVerify";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -21,8 +21,24 @@ import NotFound from "../components/NotFound";
 import ResetPassword from "../pages/ResetPassword";
 import FloatingInput from "../pages/FloatingInput";
 import Login from "../pages/Login";
+import { useEffect } from "react";
+import { useContext } from "react";
+import { AppContext } from "../context/AppContext";
 
 const AppRoutes = () => {
+
+  const {setLoading} = useContext(AppContext)
+  const location = useLocation();
+    useEffect(() => {
+    setLoading(true);
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
+
+
   return (
     <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">
       <ToastContainer />
@@ -35,7 +51,7 @@ const AppRoutes = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/about" element={<About />} />
-        <Route path="/product/:productId" element={<Product />} />
+        <Route path="/product/:slug" element={<Product />} />
         <Route path="/place-order" element={<PlaceOrder />} />
         <Route path="/orders" element={<Order />} />
         <Route path="/trackOrder" element={<TrackOrder />} />

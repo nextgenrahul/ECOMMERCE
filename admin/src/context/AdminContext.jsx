@@ -1,17 +1,21 @@
 import axios from "axios";
 import { useEffect, useState, createContext } from "react";
 import { toast } from "react-toastify";
+import Loader from "../components/Loader";
+import { useContext } from "react";
 
 export const AdminContext = createContext();
 
 export const AdminContextProvider = ({ children, token }) => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [categoryAllData, setCategoryAllData] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   const getCategoryDataAll = async () => {
     try {
       const response = await axios.get(`${backendUrl}/api/category/list`, {
         headers: {
-          token
+          token,
         },
         withCredentials: true,
       });
@@ -25,15 +29,21 @@ export const AdminContextProvider = ({ children, token }) => {
   };
 
   useEffect(() => {
-    if (token) getCategoryDataAll();
+    if (token) {
+      getCategoryDataAll();
+    }
   }, [token]);
 
   const value = {
     backendUrl,
     categoryAllData,
+    setLoading,
   };
 
   return (
-    <AdminContext.Provider value={value}>{children}</AdminContext.Provider>
+    <>
+      {loading && <Loader />}
+      <AdminContext.Provider value={value}>{children}</AdminContext.Provider>
+    </>
   );
 };

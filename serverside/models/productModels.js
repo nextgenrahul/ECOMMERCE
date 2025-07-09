@@ -1,22 +1,47 @@
 import mongoose from "mongoose";
+import slugify from "slugify";
 
 const productSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    description: { type: String, required: true },
-    price: { type: Number, required: true },
-    image: { type: [String], required: true },
+    name: { type: String, required: true }, // Admin
+    slug: { type: String, unique: true }, // Admin
+    description: { type: String, required: true }, // Admin
+    price: { type: Number, required: true }, // Admin
+    originalPrice: { type: Number }, // Admin
+    discountPercent: { type: Number }, //Admin
+    image: { type: [String], required: true }, //  Admin
+    category: { type: String, required: true }, // Admin
+    subCategory: { type: String, required: true }, // Admin
+    productGroupId: { type: String }, // Admin
+    sizes: [
+        {
+            type: Map,
+            of: Number,
+        }
+    ],
+    
+    bestseller: { type: Boolean, default: false }, // Admin
+    deliveryEstimateDays: { type: Number, default: 3 }, // Admin
+    codAvailable: { type: Boolean, default: true }, // Admin
 
-    category: { type: String, required: true, index: true },
-    subCategory: { type: String, required: true, index: true },
+    rating: { type: Number, default: 0 }, // Admin
+    reviewCount: { type: Number, default: 0 },  // Admin
+    peopleBoughtRecently: { type: Number, default: 0 }, // Based on Sales Data
 
-    stock: { type: Number, default: 0 },
-    sizes: { type: [String], default: ""},
-    isActive: { type: Boolean, default: true },
+    tags: { type: [String], default: [] }, // Admin
+}, {
+    timestamps: true
+});
 
-    bestseller: { type: Boolean, default: false },
-    date: { type: Number, required: true }
-}, { timestamps: true });
+productSchema.pre("save", function (next) {
+    if (this.isModified("description")) {
+        this.slug = slugify(this.description, {
+            lower: true,
+            trim: true,
+            strict: true
+        });
+    }
+    next();
+});
 
-const productModel = mongoose.model.product || mongoose.model("Product", productSchema);
-
+const productModel = mongoose.models.product || mongoose.model("Product", productSchema);
 export default productModel;

@@ -2,6 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Loader from "../components/Loader";
 export const AppContext = createContext();
 export const AppContextProvider = ({ children }) => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -16,6 +17,8 @@ export const AppContextProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState({});
   const [products, setProducts] = useState([]);
   const [categoryAllData, setCategoryAllData] = useState([]);
+    const [loading, setLoading] = useState(false);
+
 
   const getUserData = async () => {
     if (!backendUrl) return toast.error("Backend URL is not defined.");
@@ -26,7 +29,7 @@ export const AppContextProvider = ({ children }) => {
         setIsLoggedin(true);
         setUserData(data.data);
         localStorage.setItem("isLoggedin", "true");
-      } 
+      }
     } catch (error) {
       toast.error(
         error?.response?.data?.message || "Failed to fetch user data"
@@ -87,7 +90,11 @@ export const AppContextProvider = ({ children }) => {
       const response = await axios.get(backendUrl + "/api/cart/get", {
         withCredentials: true,
       });
-      setCartItems(response.data.cartData);
+      if (response.data.success) {
+        setCartItems(response.data.cartData);
+      } else {
+        setCartItems([]);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -106,18 +113,20 @@ export const AppContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    getProductsData();
     const init = async () => {
-      await getProductsData();
       const res = await axios.get(backendUrl + "/api/user/auth-check", {
         withCredentials: true,
       });
+
       if (res.data?.loggedIn) {
         setIsLoggedin(true);
         console.log("User is logged in");
-      }else{
+      } else {
         console.log("User is not logged in");
       }
     };
+
     init();
   }, []);
 
@@ -176,7 +185,13 @@ export const AppContextProvider = ({ children }) => {
     getCartAmount,
     categoryAllData,
     getUserCart,
+    setLoading
   };
 
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  return (
+    <>
+      {loading && <Loader />}
+      <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+    </>
+  );
 };

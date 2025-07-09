@@ -32,7 +32,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
 const check_auth = async (req, res) => {
   const token = req.cookies.accessToken;
   if (!token) return res.status(401).json({ loggedIn: false });
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET , (err, user) => {
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
     if (err) return res.status(401).json({ loggedIn: false });
     return res.json({ loggedIn: true, user });
   });
@@ -231,7 +231,7 @@ const loginUser = async (req, res) => {
     const loggedInUser = await userModel.findById(user._id).select(
       "-password -refreshToken -verifyOtp -verifyOtpExpireAt -resetOtp -resetOtpExpireAt"
     );
-    
+
 
     return res
       .cookie("accessToken", accessToken, options)
@@ -344,7 +344,7 @@ const logOut = async (req, res) => {
     if (!refreshToken) {
       return res.json({ success: false, message: "No token provided" });
     }
-    const user = await userModel.findOne({ refreshToken:refreshToken });
+    const user = await userModel.findOne({ refreshToken: refreshToken });
     if (!user) {
       res.clearCookie("accessToken");
       res.clearCookie("refreshToken");

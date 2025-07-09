@@ -9,6 +9,7 @@ import cookieParser from "cookie-parser";
 const app = express();
 app.use(cookieParser());
 const port = process.env.PORT || 4000;
+app.use(express.urlencoded({ extended: true }));
 
 // Middlewares
 app.use(express.json());
@@ -37,6 +38,7 @@ import cartRouter from "./routes/cartRoute.js";
 import orderRouter from "./routes/orderRoute.js";
 import categoryRouter from "./routes/categoryRoute.js";
 import returnRouter from "./routes/returnRoute.js";
+import colorRoute from "./routes/colorRoute.js";
 
 app.use('/api/user', userRouter);
 app.use('/api/product', productRouter);
@@ -44,7 +46,7 @@ app.use('/api/cart', cartRouter);
 app.use('/api/order', orderRouter);
 app.use('/api/category', categoryRouter);
 app.use('/api/returns', returnRouter);
-
+app.use('/api/color', colorRoute);
 // Connect to DB and Start Server
 Promise.all([
   connectDB(),
