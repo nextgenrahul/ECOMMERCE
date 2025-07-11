@@ -14,7 +14,7 @@ const LatestCollection = () => {
   const [products, setProducts] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [limit] = useState(2);
+  const [limit] = useState(5);
 
   const getProductsData = async () => {
     try {

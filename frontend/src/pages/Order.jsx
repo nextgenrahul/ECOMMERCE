@@ -48,11 +48,10 @@ const Order = () => {
         toast.error(response.data.message);
       }
 
-      // reset modal state
       setShowModal(null);
       setReason("");
       setShowReasonError(false);
-      loadOrderData(); // refresh orders after return
+      loadOrderData(); 
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong");

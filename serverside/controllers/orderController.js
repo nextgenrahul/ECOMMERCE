@@ -82,7 +82,7 @@ const allOrders = async (req, res) => {
 
 const userOrders = async (req, res) => {
   try {
-        const userId = req.userId;
+    const userId = req.userId;
 
     const orders = await orderModel.find({ userId })
     res.json({ success: true, orders })

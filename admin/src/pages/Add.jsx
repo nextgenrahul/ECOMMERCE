@@ -17,7 +17,6 @@ const Add = ({ token }) => {
   const [bestseller, setBestSeller] = useState(false);
   const [category, setCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
-  const [article, setArticle] = useState("");
   const { categoryAllData, backendUrl, setLoading } = useContext(AdminContext);
   const [colorPlate, setColorPlate] = useState(false);
   const [colorData, setColorData] = useState([]);
@@ -28,8 +27,6 @@ const Add = ({ token }) => {
 
   const [searchParams] = useSearchParams();
   const existingGroupId = searchParams.get("groupId");
-  // console.log(existingGroupId)
-  // const
   const getSubCategoryobj = () => {
     const found = categoryAllData.find((sub) => sub.category === category);
     return found ? found.subCategories : [];
@@ -53,14 +50,6 @@ const Add = ({ token }) => {
     }
   };
 
-  // const toggleSize = (size) => {
-  //   setSizes((prev) =>
-  //     prev.includes(size)
-  //       ? prev.filter((item) => item !== size)
-  //       : [...prev, size]
-  //   );
-  // };
-
   const toggleSize = (size) => {
     if (sizes.includes(size)) {
       setSizes(sizes.filter((s) => s !== size));
@@ -71,35 +60,34 @@ const Add = ({ token }) => {
       setSizes([...sizes, size]);
     }
   };
-  // console.log(stockValues);
-
-  // console.log("formatsize" , formattedSizes)
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
       const finalGroupId =
-        colorPlate && (existingGroupId || Date.now().toString());
+        colorPlate ? (existingGroupId || Date.now().toString()) : "";
       const formData = new FormData();
       const formattedSizes = sizes.map((size) => ({
-        [size]: Number(stockValues[size] || 0),
+        size: size,
+        stock: Number(stockValues[size] || 0),
       }));
-      // console.log(formattedSizes);
+
       image1 && formData.append("image1", image1);
       image2 && formData.append("image2", image2);
       image3 && formData.append("image3", image3);
       image4 && formData.append("image4", image4);
+
       formData.append("name", name);
       formData.append("description", description);
       formData.append("price", price);
       formData.append("originalPrice", original);
       formData.append("category", category);
       formData.append("subCategory", subCategory);
-      formData.append("bestSeller", bestseller ? "true" : "false");
       formData.append("sizes", JSON.stringify(formattedSizes));
-      formData.append("color_id", selectedColorId);
+      formData.append("bestSeller", bestseller ? "true" : "false");
       formData.append("productGroupId", finalGroupId);
+      formData.append("color_id", selectedColorId);
       const response = await axios.post(
         backendUrl + "/api/product/add",
         formData,
@@ -117,6 +105,9 @@ const Add = ({ token }) => {
         setImage4(null);
         setPrice("");
         setSizes([]);
+        setCategory("")
+        setOriginal("")
+        setSubCategory("")
         setStockValues({});
         setBestSeller(false);
         setColorPlate(false);
@@ -278,8 +269,6 @@ const Add = ({ token }) => {
       category === "cloth" ? (
         <div className="mb-6">
           <p className="mb-2 font-medium text-gray-700">Cloths Size</p>
-
-          {/* Responsive Grid instead of flex */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {["XS", "S", "M", "L", "XL", "XXL", "2XL", "3XL"].map((size) => (
               <div key={size} className="relative group">
@@ -293,7 +282,6 @@ const Add = ({ token }) => {
                   </p>
                 </div>
 
-                {/* Stock input — visible always for selected sizes */}
                 {sizes.includes(size) && (
                   <input
                     type="number"

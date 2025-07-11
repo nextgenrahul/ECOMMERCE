@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 const productColorRelationSchema = new mongoose.Schema({
-    group_id: { type: String, required: true },
-    product_id: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
-    color_id: { type: mongoose.Schema.Types.ObjectId, ref: "Color", required: true }
+    group_id: { type: String },
+    product_id: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: false },
+    color_id: { type: mongoose.Schema.Types.ObjectId, ref: "Color" , required: false}
 }, {
     timestamps: true
 }

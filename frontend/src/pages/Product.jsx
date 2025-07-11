@@ -10,12 +10,11 @@ const Product = () => {
   const { products, currency, addToCart, backendUrl } = useContext(AppContext);
   const [productData, setProductData] = useState(false);
   const [image, setImage] = useState("");
-  const [size, setSize] = useState("");
+  // const [size, setSize] = useState("");
   const [activeProductId, setActiveProductId] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [groupColors, setGroupColors] = useState([]);
   const navigate = useNavigate();
-  console.log(selectedSize)
   const fetchProductData = async () => {
     const foundProduct = products.find((item) => item.slug === slug);
     if (foundProduct) {
@@ -47,15 +46,15 @@ const Product = () => {
     } catch (error) {}
   };
 
-useEffect(() => {
-  fetchProductData(); 
-}, [slug, products]);
+  useEffect(() => {
+    fetchProductData();
+  }, [slug, products]);
 
-useEffect(() => {
-  if (productData?.productGroupId) {
-    fetct_color_relation(productData.productGroupId);
-  }
-}, [productData?.productGroupId]);
+  useEffect(() => {
+    if (productData?.productGroupId) {
+      fetct_color_relation(productData.productGroupId);
+    }
+  }, [productData?.productGroupId]);
 
   return productData ? (
     <div className="border-t pt-10 transition-opacity ease-in duration-500 opacity-100">
@@ -100,21 +99,20 @@ useEffect(() => {
               <p className="text-base font-medium mb-2">Select Size</p>
               <div className="flex flex-wrap gap-3">
                 {productData.sizes?.map((item, index) => {
-                  const [size, stock] = Object.entries(item)[0];
-                  const isSelected = selectedSize?.[size] !== undefined;
-
+                  // const [size, stock] = Object.entries(item)[0];
+                  const isSelected = selectedSize === item.size;
                   return (
                     <div
                       key={index}
-                      onClick={() => setSelectedSize(item)}
+                      onClick={() => setSelectedSize(item.size)}
                       className={`w-24 p- rounded shadow border cursor-pointer hover:shadow-md transition
               ${isSelected ? "border-orange-500 bg-orange-50" : "bg-white"}`}
                     >
                       <p className="text-sm font-semibold text-center">
-                        {size}
+                        {item.size}
                       </p>
                       <p className="text-xs text-gray-500 text-center">
-                        Stock: {stock}
+                        Stock: {item.stock}
                       </p>
                     </div>
                   );
@@ -126,51 +124,41 @@ useEffect(() => {
           {groupColors && (
             <div className="my-6">
               <h2 className="text-lg font-semibold mb-4 text-gray-800">
-                Color Group Products
+                {groupColors.length === 0 ? "" : "Color Group Products"}
               </h2>
 
               {groupColors.length === 0 ? (
-                <p className="text-gray-500">
-                  No products found for this group.
-                </p>
+                ""
               ) : (
-                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-2">
-                  {groupColors.map((item) => (
-                    <div
-                      key={item.productId}
-                      onClick={() => {
-                        productNavigate(item.slug);
-                        setActiveProductId(item.productId);
-                      }}
-                      className={`flex items-center gap-4 p-1 bg-white rounded shadow-sm cursor-pointer transition ${
-                        activeProductId === item.productId || slug === item.slug 
-                          ? "border-2 border-orange-500"
-                          : "border"
-                      }`}
-                    >
+                <div className="flex flex-wrap gap-4">
+                  {groupColors.map((item) => {
+                    const isSelected =
+                      activeProductId === item.productId || slug === item.slug;
+
+                    return (
                       <div
-                        className="w-6 h-6 rounded-full border"
+                        key={item.productId}
+                        onClick={() => {
+                          productNavigate(item.slug);
+                          setActiveProductId(item.productId);
+                        }}
+                        className={`w-12 h-12 rounded-full cursor-pointer transition-transform duration-200 hover:scale-105 ${
+                          isSelected
+                            ? "ring-2 ring-orange-500 ring-offset-2"
+                            : "ring-1 ring-gray-300"
+                        }`}
                         style={{ backgroundColor: item.colorHex }}
                         title={item.colorName}
                       ></div>
-
-                      <div>
-                        <p className="font-medium text-gray-700">
-                          {item.productName}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {item.colorName}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
           )}
 
           <button
-            onClick={() => addToCart(productData._id, size)}
+            onClick={() => addToCart(productData._id, selectedSize)}
             className="bg-black mt-3 text-white px-8 py-3 text-sm active:bg-gray-700"
           >
             ADD TO CART

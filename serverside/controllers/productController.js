@@ -68,15 +68,16 @@ const addProduct = async (req, res) => {
             subCategory,
             sizes: parsedSizes,
             bestseller: bestseller === "true",
-            productGroupId: finalGroupId,
+            productGroupId: finalGroupId ? finalGroupId : "",
         });
 
         const savedProduct = await product.save();
 
-        if (!color_id) {
-            return res.json({ success: false, message: "Color ID is required." });
-        }
-        if (finalGroupId) {
+
+        if (finalGroupId && finalGroupId.trim() !== "") {
+            if (!color_id) {
+                return res.json({ success: false, message: "Color ID is required." });
+            }
             const colorRelation = new ProductColorRelation({
                 group_id: finalGroupId,
                 product_id: savedProduct._id,
@@ -84,9 +85,7 @@ const addProduct = async (req, res) => {
             });
 
             await colorRelation.save();
-
         }
-
 
         res.json({
             success: true,
@@ -96,14 +95,14 @@ const addProduct = async (req, res) => {
 
     } catch (error) {
         console.error("Error adding product:", error);
-        res.json({
+        res.status(500).json({
             success: false,
             message: "Internal server error",
+            error: error.message,
         });
     }
 };
 
-export default addProduct;
 
 
 
@@ -174,7 +173,7 @@ const getAllGroupIdData = async (req, res) => {
             productId: item.product_id._id,
             productName: item.product_id.name,
             slug: item.product_id.slug,
-            colorId: item.color_id._id,
+            colorId: item.color_id,
             colorName: item.color_id.colorName,
             colorHex: item.color_id.colorHex,
         }));

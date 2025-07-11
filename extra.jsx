@@ -1,22 +1,66 @@
 import React, { useContext, useEffect, useState } from "react";
+import Title from "../components/Title";
 import { assets } from "../assets/images/assets.js";
-import { AppContext } from "../context/AppContext.jsx";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import Title from "../components/Title.jsx";
 import ProductItem from "../components/ProductItem";
+import { AppContext } from "../context/AppContext.jsx";
+import { Range } from "react-range";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const Collection = () => {
-  const navigate = useNavigate();
+  const [min] = useState(0);
+  const [max] = useState(10000);
+  const [step] = useState(50);
   const { products, search, showSearch, categoryAllData } =
     useContext(AppContext);
-  const [searchParams] = useSearchParams();
-
+  const [localValues, setLocalValues] = useState([min, max]);
   const [showFilter, setShowFilter] = useState(false);
+  const [filterProducts, setFilterProduct] = useState([]);
   const [category, setCategory] = useState([]);
   const [subCategory, setSubCategory] = useState([]);
   const [subObj, setSubObj] = useState([]);
   const [sortType, setSortType] = useState("relevent");
-  const [filterProducts, setFilterProduct] = useState([]);
+
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const getSubCategories = (categoryName) => {
+    const match = categoryAllData.find(
+      (item) => item.category.toLowerCase() === categoryName.toLowerCase()
+    );
+    return match?.subCategories || [];
+  };
+
+  const toggleCategory = (e) => {
+    const value = e.target.value;
+    let newCategory = [...category];
+    let newSubCategory = [...subCategory];
+
+    if (newCategory.includes(value)) {
+      newCategory = newCategory.filter((item) => item !== value);
+      setSubObj((prev) => {
+        const copy = { ...prev };
+        console.log(copy);
+        delete copy[value];
+        return copy;
+      });
+
+      const subsToRemove = getSubCategories(value);
+      newSubCategory = newSubCategory.filter((s) => !subsToRemove.includes(s));
+    } else {
+      newCategory.push(value);
+      setSubObj((prev) => ({
+        ...prev,
+        [value]: getSubCategories(value),
+      }));
+    }
+
+    setCategory(newCategory);
+    setSubCategory(newSubCategory);
+
+    const categorySlug = newCategory.join("_");
+    const subCategorySlug = newSubCategory.join("_");
+    navigate(`?category=${categorySlug}&subCategory=${subCategorySlug}`);
+  };
 
   const applyFilter = () => {
     let productsCopy = products?.slice();
@@ -31,49 +75,19 @@ const Collection = () => {
         category.includes(item.category)
       );
     }
+
     if (subCategory.length > 0) {
       productsCopy = productsCopy.filter((item) =>
         subCategory.includes(item.subCategory)
       );
     }
+    
+
+    productsCopy = productsCopy.filter(
+      (item) => item.price >= localValues[0] && item.price <= localValues[1]
+    );
 
     setFilterProduct(productsCopy);
-  };
-
-  const getSubCategories = (categoryName) => {
-    const match = categoryAllData.find(
-      (item) => item.category.toLowerCase() === categoryName.toLowerCase()
-    );
-    return match?.subCategories || [];
-  };
-
-  const toggleCategory = (e) => {
-    let value = e.target.value;
-    let newCategory = [...category];
-    let newSubCategory = [...subCategory];
-
-    if (newCategory.includes(value)) {
-      newCategory = newCategory.filter((item) => item !== value);
-      setSubObj((prev) => {
-        const copy = { ...prev };
-        delete copy[value];
-        return copy;
-      });
-
-      const subsToRemove = getSubCategories(value);
-      newSubCategory = newSubCategory.filter((s) => !subsToRemove.includes(s));
-    } else {
-      newCategory.push(value);
-      setSubObj((prev) => ({
-        ...prev,
-        [value]: getSubCategories(value),
-      }));
-    }
-    setCategory(newCategory);
-    setSubCategory(newSubCategory);
-    const categorySlug = newCategory.join("_");
-    const subCategorySlug = newSubCategory.join("_");
-    navigate(`?category=${categorySlug}&subCategory=${subCategorySlug}`);
   };
 
   const sortProduct = () => {
@@ -90,43 +104,34 @@ const Collection = () => {
         break;
     }
   };
-  const clearAllSelectedBtn = () => {
-    let cate = category.slice();
-    let sub = subCategory.slice();
-    cate = [];
-    sub = [];
-    setCategory(cate);
-    setSubCategory(sub);
-    navigate("/collection");
-    setSubObj({});
-    applyFilter();
-  };
-
-  useEffect(() => {
-  if (categoryAllData.length === 0) return; 
-
-  const catParam = searchParams.get("category");
-  const subParam = searchParams.get("subCategory");
-
-  const categoriesFromURL = catParam ? catParam.split("_") : [];
-  const subCategoriesFromURL = subParam ? subParam.split("_") : [];
-
-  setCategory(categoriesFromURL);
-  setSubCategory(subCategoriesFromURL);
-
-  const subObjFromURL = {};
-  categoriesFromURL.forEach((cat) => {
-    subObjFromURL[cat] = getSubCategories(cat);
-  });
-  setSubObj(subObjFromURL);
-}, [categoryAllData]); 
-
 
   useEffect(() => {
     if (products.length > 0) {
       applyFilter();
+      // localStorage.setItem("selectedCategories", JSON.stringify(category));
+      // localStorage.setItem(
+      //   "selectedSubCategories",
+      //   JSON.stringify(subCategory)
+      // );
     }
-  }, [category, subCategory, search, showSearch, products]);
+  }, [category, subCategory, search, showSearch, products, localValues]);
+
+  useEffect(() => {
+    const catParam = searchParams.get("category");
+    const subParam = searchParams.get("subCategory");
+
+    const categoriesFromURL = catParam ? catParam.split("_") : [];
+    const subCategoriesFromURL = subParam ? subParam.split("_") : [];
+
+    setCategory(categoriesFromURL);
+    setSubCategory(subCategoriesFromURL);
+
+    const subObjFromURL = {};
+    categoriesFromURL.forEach((cat) => {
+      subObjFromURL[cat] = getSubCategories(cat);
+    });
+    setSubObj(subObjFromURL);
+  }, []);
 
   useEffect(() => {
     sortProduct();
@@ -134,24 +139,20 @@ const Collection = () => {
 
   return (
     <div className="flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t">
-      <div className="min-w-6">
+      {/* Filter Section */}
+      <div className="min-w-60">
         <p
           onClick={() => setShowFilter(!showFilter)}
           className="my-2 text-xl flex items-center cursor-pointer gap-2"
         >
-          FILTERS{" "}
-          <button
-            className="bg-white text-gray-700 border border-gray-400 px-4 py-2 text-[13px] rounded-full shadow-sm hover:bg-gray-100 hover:text-black transition-all duration-200"
-            onClick={() => clearAllSelectedBtn()}
-          >
-            Clear All
-          </button>
+          FILTERS
           <img
-            className={`h-4 sm:hidden ${showFilter ? "rotate-90" : ""}`}
+            className={`h-3 sm:hidden ${showFilter ? "rotate-90" : ""}`}
             src={assets.dropdown_icon}
             alt=""
           />
         </p>
+
         {/* Category Filter */}
         <div
           className={`border border-gray-300 pl-5 py-3 mt-6 ${
@@ -203,6 +204,7 @@ const Collection = () => {
                         onChange={(e) => {
                           const value = e.target.value;
                           let newSub = [...subCategory];
+
                           if (newSub.includes(value)) {
                             newSub = newSub.filter((item) => item !== value);
                           } else {
@@ -210,6 +212,7 @@ const Collection = () => {
                           }
 
                           setSubCategory(newSub);
+
                           const categorySlug = category.join("_");
                           const subCategorySlug = newSub.join("_");
                           navigate(
@@ -226,7 +229,75 @@ const Collection = () => {
             </div>
           </div>
         )}
+
+        {/* Price Range Filter */}
+        <div
+          className={`border border-gray-300 pl-5 py-3 mt-6 ${
+            showFilter ? "" : "hidden"
+          } sm:block`}
+        >
+          <p className="mb-3 text-sm font-medium">PRICE RANGE</p>
+          <Range
+            step={step}
+            min={min}
+            max={max}
+            values={localValues}
+            onChange={(values) => setLocalValues(values)}
+            renderTrack={({ props, children }) => (
+              <div
+                {...props}
+                style={{
+                  ...props.style,
+                  height: "6px",
+                  width: "90%",
+                  margin: "30px auto",
+                  background: "#ddd",
+                  borderRadius: "4px",
+                }}
+              >
+                <div
+                  style={{
+                    height: "100%",
+                    background: "#0ea5e9",
+                    borderRadius: "4px",
+                    marginLeft: `${
+                      ((localValues[0] - min) / (max - min)) * 100
+                    }%`,
+                    width: `${
+                      ((localValues[1] - localValues[0]) / (max - min)) * 100
+                    }%`,
+                  }}
+                />
+                {children}
+              </div>
+            )}
+            renderThumb={({ props }) => {
+              const { key, ...restProps } = props;
+              return (
+                <div
+                  key={key}
+                  {...restProps}
+                  style={{
+                    ...props.style,
+                    height: "20px",
+                    width: "20px",
+                    borderRadius: "50%",
+                    backgroundColor: "#0ea5e9",
+                    border: "2px solid white",
+                    boxShadow: "0 0 3px rgba(0,0,0,0.2)",
+                  }}
+                />
+              );
+            }}
+          />
+          <div className="text-xs text-gray-600 flex justify-between px-3">
+            <span>₹{localValues[0]}</span>
+            <span>₹{localValues[1]}</span>
+          </div>
+        </div>
       </div>
+
+      {/* Product Display Section */}
       <div className="flex-1">
         <div className="flex justify-between text-base sm:text-2xl mb-4">
           <Title text1={"ALL"} text2={"COLLECTIONS"} />
@@ -239,7 +310,8 @@ const Collection = () => {
             <option value="high-low">Sort by: High to Low</option>
           </select>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
           {filterProducts?.map((item, index) => (
             <ProductItem
               key={index}

@@ -17,8 +17,7 @@ export const AppContextProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState({});
   const [products, setProducts] = useState([]);
   const [categoryAllData, setCategoryAllData] = useState([]);
-    const [loading, setLoading] = useState(false);
-
+  const [loading, setLoading] = useState(false);
 
   const getUserData = async () => {
     if (!backendUrl) return toast.error("Backend URL is not defined.");
@@ -39,20 +38,27 @@ export const AppContextProvider = ({ children }) => {
 
   const addToCart = async (itemId, size) => {
     let cartData = structuredClone(cartItems);
+
     if (cartData[itemId]) {
       cartData[itemId][size] = (cartData[itemId][size] || 0) + 1;
     } else {
       cartData[itemId] = { [size]: 1 };
     }
+
     setCartItems(cartData);
-    try {
-      await axios.post(
-        backendUrl + "/api/cart/add",
-        { itemId, size },
-        { withCredentials: true }
-      );
-    } catch (error) {
-      console.log(error);
+
+    if (isLoggedin) {
+      try {
+        await axios.post(
+          backendUrl + "/api/cart/add",
+          { itemId, size },
+          { withCredentials: true }
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      localStorage.setItem("cartData", JSON.stringify(cartData));
     }
   };
 
@@ -70,9 +76,16 @@ export const AppContextProvider = ({ children }) => {
   };
 
   const updateQuantity = async (itemId, size, quantity) => {
-    let cartData = structuredClone(cartItems);
-    cartData[itemId][size] = quantity;
-    setCartItems(cartData);
+  let cartData = structuredClone(cartItems);
+  cartData[itemId][size] = quantity;
+  if (quantity === 0) {
+    delete cartData[itemId][size];
+    if (Object.keys(cartData[itemId]).length === 0) {
+      delete cartData[itemId];
+    }
+  }
+  setCartItems(cartData);
+  if (isLoggedin) {
     try {
       await axios.post(
         backendUrl + "/api/cart/update",
@@ -83,20 +96,33 @@ export const AppContextProvider = ({ children }) => {
       console.log(error);
       toast.error(error.message);
     }
-  };
+  } else {
+    localStorage.setItem("cartData", JSON.stringify(cartData));
+  }
+};
+
 
   const getUserCart = async () => {
-    try {
-      const response = await axios.get(backendUrl + "/api/cart/get", {
-        withCredentials: true,
-      });
-      if (response.data.success) {
-        setCartItems(response.data.cartData);
-      } else {
-        setCartItems([]);
+    if (isLoggedin) {
+      try {
+        const response = await axios.get(backendUrl + "/api/cart/get", {
+          withCredentials: true,
+        });
+        if (response.data.success) {
+          setCartItems(response.data.cartData);
+        } else {
+          setCartItems([]);
+        }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
+    } else {
+      const localCart = localStorage.getItem("cartData");
+      if (localCart) {
+        setCartItems(JSON.parse(localCart));
+      } else {
+        setCartItems({});
+      }
     }
   };
 
@@ -114,20 +140,20 @@ export const AppContextProvider = ({ children }) => {
 
   useEffect(() => {
     getProductsData();
-    const init = async () => {
-      const res = await axios.get(backendUrl + "/api/user/auth-check", {
-        withCredentials: true,
-      });
+    // const init = async () => {
+    //   const res = await axios.get(backendUrl + "/api/user/auth-check", {
+    //     withCredentials: true,
+    //   });
 
-      if (res.data?.loggedIn) {
-        setIsLoggedin(true);
-        console.log("User is logged in");
-      } else {
-        console.log("User is not logged in");
-      }
-    };
+    //   if (res.data?.loggedIn) {
+    //     setIsLoggedin(true);
+    //     console.log("User is logged in");
+    //   } else {
+    //     console.log("User is not logged in");
+    //   }
+    // };
 
-    init();
+    // init();
   }, []);
 
   const getCartAmount = () => {
@@ -185,7 +211,7 @@ export const AppContextProvider = ({ children }) => {
     getCartAmount,
     categoryAllData,
     getUserCart,
-    setLoading
+    setLoading,
   };
 
   return (

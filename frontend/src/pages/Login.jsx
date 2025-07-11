@@ -7,7 +7,7 @@ import axios from "axios";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { backendUrl, setIsLoggedin, getUserData } = useContext(AppContext);
+  const { backendUrl, setIsLoggedin, setLoading, getUserData } = useContext(AppContext);
   const [isLogin, setIsLogin] = useState(true);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -20,6 +20,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
+      setLoading(true)
       axios.defaults.withCredentials = true;
       if (!isLogin) {
         const { data } = await axios.post(backendUrl + "/api/user/register", {
@@ -52,6 +53,8 @@ const Login = () => {
       }
     } catch (error) {
       toast.error(error?.response?.data?.message || "Something went wrong");
+    }finally{
+      setLoading(false)
     }
   };
 

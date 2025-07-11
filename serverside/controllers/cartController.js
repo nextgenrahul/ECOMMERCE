@@ -58,7 +58,7 @@ const updateCart = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to update cart", error: error.message });
   }
 };
-
+  
 
 const getUserCart = async (req, res) => {
   try {
