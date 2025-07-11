@@ -1,9 +1,7 @@
 import orderModel from "../models/orderModel.js";
-import userModel from "../models/userModel.js"; // ✅ Import added
+import userModel from "../models/userModel.js";
+import productModel from "../models/productModels.js";
 
-
-const curreny = "inr";
-const deliveryCharge = 10
 
 const placeOrder = async (req, res) => {
   try {
@@ -97,13 +95,40 @@ const userOrders = async (req, res) => {
 const updateStatus = async (req, res) => {
   try {
     const { orderId, status, reason, payment } = req.body;
-    await orderModel.findByIdAndUpdate(orderId, { status, reason, payment });
-    res.json({ success: true, message: "Status Updated" })
+
+    if (status === "Delivered") {
+      const order = await orderModel.findById(orderId);
+
+      if (!order || !order.items || order.items.length === 0) {
+        return res.json({ success: false, message: "Order not found or has no items" });
+      }
+
+      for (let item of order.items) {
+        await productModel.updateOne(
+          { _id: item.productId, "sizes.size": item.size },
+          {
+            $inc: {
+              "sizes.$.stock": -item.quantity,
+            }
+          }
+        );
+      }
+
+      order.status = "Delivered";
+      order.payment = payment;
+      order.reason = reason;
+      await order.save();
+
+      return res.json({ success: true, message: "Status Updated & Stock Decreased" });
+    } else {
+      await orderModel.findByIdAndUpdate(orderId, { status, reason, payment });
+      return res.json({ success: true, message: "Status Updated" });
+    }
   } catch (error) {
     console.log(error);
-    res.json({ success: false, message: error.message })
+    res.status(500).json({ success: false, message: error.message });
   }
-}
+};
 
 
 // Get Order Track result 

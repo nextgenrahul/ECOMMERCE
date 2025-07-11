@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import Siderbar from "./components/Siderbar";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Add from "./pages/Add";
 import List from "./pages/List";
 import Orders from "./pages/Orders";
@@ -13,9 +13,7 @@ import { AdminContextProvider } from "./context/AdminContext";
 import SubCategory from "./pages/SubCategory";
 import OrderReturn from "./pages/OrderReturn";
 import AddColor from "./pages/AddColor";
-import { useLocation } from "react-router-dom";
-
-// 👉 Import your loader
+import { jwtDecode } from "jwt-decode";
 import Loader from "./components/Loader";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -24,29 +22,42 @@ export const currency = "$";
 const App = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState(
-    localStorage.getItem("token") ? localStorage.getItem("token") : ""
-  );
-  
+  const [token, setToken] = useState("");
+
+  // ✅ Check if token is valid on mount
+  useEffect(() => {
+    const savedToken = localStorage.getItem("token");
+
+    if (savedToken) {
+      try {
+        const decoded = jwtDecode(savedToken);
+        if (decoded.exp * 1000 > Date.now()) {
+          setToken(savedToken);
+        } else {
+          localStorage.removeItem("token");
+        }
+      } catch (err) {
+        console.error("Invalid token:", err);
+        localStorage.removeItem("token");
+      }
+    }
+  }, []);
+
+  // ✅ Save token in localStorage whenever it changes
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", token);
+    }
+  }, [token]);
+
+  // ✅ Loader for page transition
   useEffect(() => {
     setLoading(true);
     const timer = setTimeout(() => {
       setLoading(false);
     }, 500);
-
     return () => clearTimeout(timer);
   }, [location.pathname]);
-
-  useEffect(() => {
-    localStorage.setItem("token", token);
-  }, [token]);
-
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setLoading(false);
-  //   }, 1000);
-  //   return () => clearTimeout(timer);
-  // }, []);
 
   if (loading) {
     return <Loader />;
@@ -79,10 +90,7 @@ const App = () => {
                     element={<SubCategory token={token} />}
                   />
                   <Route path="/order-return" element={<OrderReturn />} />
-                  <Route
-                    path="/addColor"
-                    element={<AddColor token={token} />}
-                  />
+                  <Route path="/addColor" element={<AddColor token={token} />} />
                 </Routes>
               </div>
             </div>

@@ -6,17 +6,16 @@ import { assets } from "../assets/admin_assets/assets.js";
 import { AdminContext } from "../context/AdminContext.jsx";
 
 const Orders = ({ token }) => {
-
   const [orders, setOrders] = useState([]);
   const [statusHan, setStatusHan] = useState("");
   const [reason, setReason] = useState("");
   const [orderUpdates, setOrderUpdates] = useState({});
-  const {setLoading} = useContext(AdminContext)
+  const { setLoading } = useContext(AdminContext);
   const fetchAllOrders = async () => {
     if (!token) return;
 
     try {
-      setLoading(true)
+      setLoading(true);
       const response = await axios.post(
         `${backendUrl}/api/order/list`,
         {},
@@ -24,14 +23,15 @@ const Orders = ({ token }) => {
       );
 
       if (response.data.success) {
+        // console.log(response.data.orders);
         setOrders(response.data.orders);
       } else {
         toast.error(response.data.message);
       }
     } catch (error) {
       toast.error(error.message);
-    }finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -41,10 +41,9 @@ const Orders = ({ token }) => {
     // if (!status || reason) {
     //   return toast.error("Please select status and provide reason.");
     // }
-    setLoading(true)
+    setLoading(true);
 
     try {
-
       let response;
       if (status === "Delivered") {
         response = await axios.post(
@@ -52,7 +51,7 @@ const Orders = ({ token }) => {
           { orderId, status, reason, payment: true },
           { headers: { token } }
         );
-
+        
       } else {
         response = await axios.post(
           backendUrl + "/api/order/status",
@@ -70,8 +69,8 @@ const Orders = ({ token }) => {
     } catch (error) {
       console.error(error);
       toast.error("Something went wrong.");
-    } finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -87,11 +86,9 @@ const Orders = ({ token }) => {
         {orders.map((order, index) => (
           <div
             key={index}
-            className={`${
-              order.status === "Delivered"
-                ? "inset-0 select-none bg-black opacity-30 no rounded pointer-events-none z-10"
-                : ""
-            } relative grid grid-cols-1 md:grid-cols-3 gap-4 border p-4 rounded shadow items-start`}
+            className={`
+              
+             relative grid grid-cols-1 md:grid-cols-3 gap-4 border p-4 rounded shadow items-start`}
           >
             {order.status === "Delivered" && (
               <h2 className="absolute top-4 left-1/2 -translate-x-1/2 w-fit text-center text-sm sm:text-base md:text-lg lg:text-xl font-bold text-red-600 bg-white rounded-2xl p-2 z-20 shadow-md">
@@ -103,7 +100,6 @@ const Orders = ({ token }) => {
             {/* Left Column - Order & Customer Info */}
             <div>
               <div className="flex items-center gap-3 mb-2">
-
                 <img
                   src={assets.parcel_icon}
                   alt="Parcel"
@@ -111,11 +107,9 @@ const Orders = ({ token }) => {
                 />
 
                 <p className="text-sm font-semibold">Order #{index + 1}</p>
-
               </div>
 
               <div className="text-sm text-gray-800 mb-2">
-
                 <p>Order Id : {order._id}</p>
 
                 <p className="font-medium">Customer:</p>
@@ -123,7 +117,7 @@ const Orders = ({ token }) => {
                 <p>
                   Name : {order.address.firstName} {order.address.lastName}
                 </p>
-                
+
                 <p>
                   Address : {order.address.street}, {order.address.city},{" "}
                   {order.address.state}, {order.address.country} -{" "}
@@ -152,7 +146,6 @@ const Orders = ({ token }) => {
 
             {/* Right Column - Price & Status */}
             <div className="text-right md:text-left flex flex-col gap-3">
-
               <p className="text-sm text-gray-800">
                 <span className="font-medium">Amount:</span> {currency}
                 {order.amount}
@@ -196,7 +189,7 @@ const Orders = ({ token }) => {
               />
               <button
                 onClick={() => handleSubmit(order._id)}
-                disabled={order.status === "Delivered"}
+                // disabled={order.status === "Delivered"}
                 type="button"
                 className={`border-2 rounded-2xl px-3 py-1 text-white ${
                   order.status === "Delivered"

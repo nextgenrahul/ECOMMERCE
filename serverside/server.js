@@ -39,6 +39,7 @@ import orderRouter from "./routes/orderRoute.js";
 import categoryRouter from "./routes/categoryRoute.js";
 import returnRouter from "./routes/returnRoute.js";
 import colorRoute from "./routes/colorRoute.js";
+import reviewRouter from "./routes/reviewRoute.js";
 
 app.use('/api/user', userRouter);
 app.use('/api/product', productRouter);
@@ -47,6 +48,8 @@ app.use('/api/order', orderRouter);
 app.use('/api/category', categoryRouter);
 app.use('/api/returns', returnRouter);
 app.use('/api/color', colorRoute);
+app.use('/api/review', reviewRouter);
+
 // Connect to DB and Start Server
 Promise.all([
   connectDB(),

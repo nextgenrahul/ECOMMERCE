@@ -1,3 +1,4 @@
+import productModel from "../models/productModels.js";
 import userModel from "../models/userModel.js";
 
 const addToCart = async (req, res) => {
@@ -14,6 +15,7 @@ const addToCart = async (req, res) => {
     if (!cartData[itemId]) {
       cartData[itemId] = {};
     }
+
 
     cartData[itemId][size] = (cartData[itemId][size] || 0) + 1;
 
@@ -32,11 +34,19 @@ const updateCart = async (req, res) => {
     const userId = req.userId;
 
     const userData = await userModel.findById(userId);
+    const product = await productModel.findById(itemId)
+    if(!product){
+      return res.json({ success: false, message: "Product not found In Cart C" });
+
+    }
     if (!userData) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res.json({ success: false, message: "User not found" });
     }
 
+
     let cartData = userData.cartData || {};
+    let productData = product.sizes || {};
+
 
     if (quantity === 0) {
       if (cartData[itemId] && cartData[itemId][size]) {
@@ -58,7 +68,6 @@ const updateCart = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to update cart", error: error.message });
   }
 };
-  
 
 const getUserCart = async (req, res) => {
   try {
@@ -67,7 +76,6 @@ const getUserCart = async (req, res) => {
     if (!userData) {
       return res.json({ success: false, message: "User not found" });
     }
-
     const cartData = userData.cartData || {};
     if (cartData.length === 0) {
       res.json({ success: false, cartData, message: "Cart Data Not Found" });

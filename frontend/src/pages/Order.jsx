@@ -3,7 +3,7 @@ import Title from "../components/Title";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
-
+import { Link, useNavigate, useParams } from "react-router-dom";
 const Order = () => {
   const { backendUrl, currency, products } = useContext(AppContext);
 
@@ -51,7 +51,7 @@ const Order = () => {
       setShowModal(null);
       setReason("");
       setShowReasonError(false);
-      loadOrderData(); 
+      loadOrderData();
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong");
@@ -97,11 +97,13 @@ const Order = () => {
                   key={idx}
                   className="flex flex-col sm:flex-row items-start gap-4 border-b pb-4"
                 >
-                  <img
-                    className="w-20 h-20 object-cover"
-                    src={productItem.image[0]}
-                    alt={productItem.name}
-                  />
+                  <Link to={`/product/${productItem.slug}`}>
+                    <img
+                      className="w-20 h-20 object-cover"
+                      src={productItem.image[0]}
+                      alt={productItem.name}
+                    />
+                  </Link>
                   <div className="text-sm sm:text-base">
                     <p className="font-medium">{productItem.name}</p>
                     <p>Size: {item.size}</p>
@@ -117,15 +119,22 @@ const Order = () => {
 
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-2 gap-2">
               <div className="text-sm sm:text-base">
-                <p>
+                {order.returnOrder.status ? null : (<p>
                   Status: <span className="text-green-600">{order.status}</span>
-                </p>
+                </p>)}
+                
                 <p>Payment: {order.paymentMethod}</p>
                 <p>Date: {new Date(order.date).toDateString()}</p>
 
                 {order.returnOrder && order.returnOrder.status ? (
                   <div className="mt-2">
-                    <p>Return Status: {order.returnOrder.status}</p>
+                    <p>
+                      {" "}
+                      Return Status : 
+                      <span className="ml-1 text-green-600">
+                        {order.returnOrder.status}
+                      </span>{" "}
+                    </p>
                     <p>Reason: {order.returnOrder.reason}</p>
                     <p>Comments: {order.returnOrder.comments}</p>
                   </div>

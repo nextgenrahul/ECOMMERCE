@@ -8,7 +8,6 @@ export const AppContextProvider = ({ children }) => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [isLoggedin, setIsLoggedin] = useState(false);
   const [userData, setUserData] = useState({});
-
   const navigate = useNavigate();
   const currency = "$";
   const delivery_fee = 10;
@@ -18,6 +17,7 @@ export const AppContextProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [categoryAllData, setCategoryAllData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [userName, setUserName] = useState({});
 
   const getUserData = async () => {
     if (!backendUrl) return toast.error("Backend URL is not defined.");
@@ -74,33 +74,53 @@ export const AppContextProvider = ({ children }) => {
 
     return totalCount;
   };
+  const updateQuantity = async (itemId, size, quantity, productSizesArr) => {
+    const selectedSizeObj = productSizesArr.find((s) => s.size === size);
 
-  const updateQuantity = async (itemId, size, quantity) => {
-  let cartData = structuredClone(cartItems);
-  cartData[itemId][size] = quantity;
-  if (quantity === 0) {
-    delete cartData[itemId][size];
-    if (Object.keys(cartData[itemId]).length === 0) {
-      delete cartData[itemId];
+    if (!selectedSizeObj) {
+      toast.error("Invalid size selected!");
+      return;
     }
-  }
-  setCartItems(cartData);
-  if (isLoggedin) {
-    try {
-      await axios.post(
-        backendUrl + "/api/cart/update",
-        { itemId, size, quantity },
-        { withCredentials: true }
-      );
-    } catch (error) {
-      console.log(error);
-      toast.error(error.message);
-    }
-  } else {
-    localStorage.setItem("cartData", JSON.stringify(cartData));
-  }
-};
 
+    const stock = selectedSizeObj.stock;
+
+    if (quantity > stock) {
+      toast.error(`Only ${stock} items in stock for size ${size}`);
+      return;
+    }
+
+    let cartData = structuredClone(cartItems);
+
+    if (!cartData[itemId]) {
+      cartData[itemId] = {};
+    }
+
+    cartData[itemId][size] = quantity;
+
+    if (quantity === 0) {
+      delete cartData[itemId][size];
+      if (Object.keys(cartData[itemId]).length === 0) {
+        delete cartData[itemId];
+      }
+    }
+
+    setCartItems(cartData);
+
+    if (isLoggedin) {
+      try {
+        await axios.post(
+          `${backendUrl}/api/cart/update`,
+          { itemId, size, quantity },
+          { withCredentials: true }
+        );
+      } catch (error) {
+        console.log(error);
+        toast.error(error.message);
+      }
+    } else {
+      localStorage.setItem("cartData", JSON.stringify(cartData));
+    }
+  };
 
   const getUserCart = async () => {
     if (isLoggedin) {
@@ -140,20 +160,21 @@ export const AppContextProvider = ({ children }) => {
 
   useEffect(() => {
     getProductsData();
-    // const init = async () => {
-    //   const res = await axios.get(backendUrl + "/api/user/auth-check", {
-    //     withCredentials: true,
-    //   });
+    const init = async () => {
+      const res = await axios.get(backendUrl + "/api/user/auth-check", {
+        withCredentials: true,
+      });
 
-    //   if (res.data?.loggedIn) {
-    //     setIsLoggedin(true);
-    //     console.log("User is logged in");
-    //   } else {
-    //     console.log("User is not logged in");
-    //   }
-    // };
+      if (res.data?.loggedIn) {
+        setIsLoggedin(true);
+        setUserName(res.data.user);
+        console.log("User is logged in");
+      } else {
+        console.log("User is not logged in");
+      }
+    };
 
-    // init();
+    init();
   }, []);
 
   const getCartAmount = () => {
@@ -184,9 +205,11 @@ export const AppContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    getCategoryDataAll();
-    getUserCart();
-  }, []);
+    if (isLoggedin) {
+      getCategoryDataAll();
+      getUserCart();
+    }
+  }, [isLoggedin]);
 
   const value = {
     backendUrl,
@@ -212,6 +235,7 @@ export const AppContextProvider = ({ children }) => {
     categoryAllData,
     getUserCart,
     setLoading,
+    userName,
   };
 
   return (

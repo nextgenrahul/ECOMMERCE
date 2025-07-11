@@ -26,6 +26,9 @@ const OrderReturn = () => {
       toast.error(error.message);
     }
   };
+  const getOrder = (orderId) => {
+    return orders.find((o) => o._id === orderId);
+  };
 
   const handleChange = (orderId, field, value) => {
     setUpdates((prev) => ({
@@ -35,24 +38,44 @@ const OrderReturn = () => {
         [field]: value,
       },
     }));
-    console.log(updates)
   };
 
   const handleUpdate = async (orderId) => {
-    const data = updates[orderId];
-    if (!data?.status) return toast.error("Select a status");
+    const data = updates[orderId] || {};
+
+    // fallback value agar updates me nahi hai toh order se le lo
+    const status =
+      data.status !== undefined
+        ? data.status
+        : getOrder(orderId)?.returnOrder?.status;
+      const comments = data.comments !== undefined ? data.comments : getOrder(orderId)?.returnOrder?.comments;
+
+    if (!status) return toast.error("Select a status");
 
     try {
-      const res = await axios.put(`${backendUrl}/api/returns/${orderId}`, {
-        status: data.status,
-        comments: data.comments || "",
-      });
-      if (res.data.success) {
-        toast.success("Return status updated");
-        setUpdates((prev) => ({ ...prev, [orderId]: {} }));
-        fetchAllOrders();
+      if (status === "completed") {
+        const response = await axios.post(
+          `${backendUrl}/api/returns/deleteOrder/${orderId}/${status}/${comments}`
+        );
+        if (response.data.success) {
+          console.log(response.data.data)
+          toast.success(response.data.message);
+          fetchAllOrders();
+        } else {
+          toast.error(response.data.message);
+        }
       } else {
-        toast.error(res.data.message);
+        const res = await axios.put(`${backendUrl}/api/returns/${orderId}`, {
+          status: status,
+          comments: data.comments || "",
+        });
+        if (res.data.success) {
+          toast.success("Return status updated");
+          setUpdates((prev) => ({ ...prev, [orderId]: {} }));
+          fetchAllOrders();
+        } else {
+          toast.error(res.data.message);
+        }
       }
     } catch (err) {
       toast.error("Failed to update status");
@@ -82,11 +105,18 @@ const OrderReturn = () => {
           {orders
             .filter((o) => o.returnOrder && o.returnOrder.status)
             .map((order) => (
-              <tr key={order._id} className={`${order.returnOrder.status === "completed" ? "bg-green-300" : null} text-sm border-t `}>
+              <tr
+                key={order._id}
+                className={`${
+                  order.returnOrder.status === "completed"
+                    ? "bg-green-300"
+                    : null
+                } text-sm border-t `}
+              >
                 <td className="p-2 border">{order._id}</td>
                 <td className="p-2 border">{order.userId}</td>
                 <td className="p-2 border">
-                  <select 
+                  <select
                     value={
                       updates[order._id]?.status !== undefined
                         ? updates[order._id].status

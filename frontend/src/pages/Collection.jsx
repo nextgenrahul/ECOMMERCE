@@ -73,7 +73,7 @@ const Collection = () => {
     setSubCategory(newSubCategory);
     const categorySlug = newCategory.join("_");
     const subCategorySlug = newSubCategory.join("_");
-    navigate(`?category=${categorySlug}&subCategory=${subCategorySlug}`);
+    navigate(`?category=${encodeURIComponent(categorySlug)}&subCategory=${encodeURIComponent(subCategorySlug)}`);
   };
 
   const sortProduct = () => {

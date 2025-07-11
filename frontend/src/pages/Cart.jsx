@@ -99,7 +99,8 @@ const Cart = () => {
                       : updateQuantity(
                           item._id,
                           item.size,
-                          Number(e.target.value)
+                          Number(e.target.value),
+                          productData.sizes
                         )
                   }
                   className="border max-w-10 sm:max-w-20 px-1 sm:px-2 py-1"

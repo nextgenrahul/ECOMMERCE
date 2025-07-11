@@ -329,3 +329,11 @@ const Collection = () => {
 };
 
 export default Collection;
+
+
+
+// ${
+//               order.status === "Delivered"
+//                 ? "inset-0 select-none bg-black opacity-30 no rounded pointer-events-none z-10"
+//                 : ""
+//             }
