@@ -51,7 +51,7 @@ const Orders = ({ token }) => {
           { orderId, status, reason, payment: true },
           { headers: { token } }
         );
-        
+
       } else {
         response = await axios.post(
           backendUrl + "/api/order/status",
@@ -87,7 +87,11 @@ const Orders = ({ token }) => {
           <div
             key={index}
             className={`
-              
+              ${
+              order.status === "Delivered"
+                ? "inset-0 select-none bg-black opacity-30 no rounded pointer-events-none z-10"
+                : ""
+            }
              relative grid grid-cols-1 md:grid-cols-3 gap-4 border p-4 rounded shadow items-start`}
           >
             {order.status === "Delivered" && (
@@ -189,7 +193,7 @@ const Orders = ({ token }) => {
               />
               <button
                 onClick={() => handleSubmit(order._id)}
-                // disabled={order.status === "Delivered"}
+                disabled={order.status === "Delivered"}
                 type="button"
                 className={`border-2 rounded-2xl px-3 py-1 text-white ${
                   order.status === "Delivered"

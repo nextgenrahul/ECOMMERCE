@@ -37,6 +37,12 @@ export const AppContextProvider = ({ children }) => {
   };
 
   const addToCart = async (itemId, size) => {
+    if(!size ){
+      return toast.error("Sizes are requried");
+    }
+    if(!itemId ){
+      return toast.error("Item Id are requried");
+    }
     let cartData = structuredClone(cartItems);
 
     if (cartData[itemId]) {
