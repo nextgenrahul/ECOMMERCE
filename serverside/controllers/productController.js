@@ -26,7 +26,7 @@ const addProduct = async (req, res) => {
 
         const images = [image1, image2, image3, image4].filter(Boolean);
 
-        // Upload to Cloudinary
+        // Upload to Cloudinary 
         const imagesUrl = await Promise.all(
             images.map(async (item) => {
                 const result = await cloudinary.uploader.upload(item.path, {
