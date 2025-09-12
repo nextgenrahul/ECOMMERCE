@@ -3,26 +3,33 @@ import { backendUrl } from "../App";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { AdminContext } from "../context/AdminContext";
+
 const Login = ({ setToken }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { setLoading } = useContext(AdminContext);
+
   const onSubmitHandler = async (e) => {
+    e.preventDefault();
+    let response;
     try {
-      e.preventDefault();
       setLoading(true);
-      const response = await axios.post(backendUrl + "/api/user/admin", {
-        email,
-        password,
-      });
+      if (email && password) {
+        response = await axios.post(`${backendUrl}/api/user/admin`, {
+          email,
+          password,
+        });
+      }
+      console.log(response);
+
       if (response.data.success) {
         setToken(response.data.token);
       } else {
-        toast.error(response.data.message);
+        toast.error(response.data.message || "Login failed");
       }
     } catch (error) {
-      console.log(error);
-      toast.error(error.message);
+      console.error(error);
+      toast.error(error.response?.data?.message || error.message);
     } finally {
       setLoading(false);
     }
@@ -49,9 +56,9 @@ const Login = ({ setToken }) => {
             <input
               className="rounded-full w-full px-4 py-2 border border-gray-300 outline-none focus:ring-2 focus:ring-gray-400"
               type="password"
+              placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
               required
             />
           </div>

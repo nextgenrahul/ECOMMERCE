@@ -114,7 +114,7 @@ const listProduct = async (req, res) => {
         res.json({ success: true, products });
     } catch (error) {
         console.error("Error listing products:", error);
-        res.json({ success: false, message: "Internal server error" });
+        res.json({ success: false, message: "Internal server error Products list not fetch" });
     }
 };
 

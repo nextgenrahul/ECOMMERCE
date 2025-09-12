@@ -23,11 +23,12 @@ const LatestCollection = () => {
           backendUrl + `/api/product/paginateProducts`,
           { params: { page, limit } }
         );
-        if (response.data.success) {
+        if (response?.data?.success) {
           setProducts(response.data.data);
           setTotalPages(response.data.totalPages);
         } else {
-          toast.error(response.data.message);
+          // toast.error(response.data.message);
+          console.log(response.data.message)
         }
       }
     } catch (error) {

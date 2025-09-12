@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useContext, useEffect, useState } from "react";
+import React, { memo, useCallback, useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { AdminContext } from "../context/AdminContext";
 
@@ -10,19 +10,20 @@ const ColorManager = ({ token }) => {
   const [colorHex, setColorHex] = useState("");
   const [colorId, setColorId] = useState("");
 
-  const getColorList = async () => {
+  const getColorList = useCallback(async () => {
     setLoading(true);
     try {
-      const { data } = await axios.get(backendUrl + "/api/color/list", {
-        headers: {
-          token: token,
-        },
-      });
-
-      if (data.success) {
-        setColors(data.data);
-      } else {
-        toast.error(data.message || "Failed to fetch color list");
+      if (token) {
+        const { data } = await axios.get(`${backendUrl}/api/color/list`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (data.success) {
+          setColors(data.data);
+        } else {
+          toast.error(data.message || "Failed to fetch color list");
+        }
       }
     } catch (error) {
       console.error("Color fetch error:", error);
@@ -30,9 +31,9 @@ const ColorManager = ({ token }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [backendUrl, token, setLoading]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     if (!color || !colorHex) {
       return toast.error("Both values are required");
     }
@@ -49,13 +50,14 @@ const ColorManager = ({ token }) => {
         payload.colorId = colorId;
         res = await axios.post(`${backendUrl}/api/color/updateColor`, payload, {
           headers: {
-            token: token,
+            Authorization: `Bearer ${token}`,
           },
         });
       } else {
-        // ADD color
         res = await axios.post(`${backendUrl}/api/color/addColor`, payload, {
-          headers: token,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
       }
 
@@ -78,32 +80,26 @@ const ColorManager = ({ token }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [backendUrl, color, colorId, colorHex, token, setLoading, getColorList]);
 
-  const handleEdit = async (colorId, colorName, colorHexVal) => {
-    if (colorName && colorHexVal && colorId) {
-      setColorHex(colorHexVal);
-      setColor(colorName);
-      setColorId(colorId);
+  const handleEdit = (id, name, hex) => {
+    if (id && name && hex) {
+      setColorHex(hex);
+      setColor(name);
+      setColorId(id);
     }
   };
 
-  const handleDelete = async (colorId) => {
-    if (!colorId) return toast.error("Color ID missing");
-
-    const confirm = window.confirm(
-      "Are you sure you want to delete this color?"
-    );
-    if (!confirm) return;
-
+  const handleDelete = async (id) => {
+    if (!id) return toast.error("Color ID missing");
     setLoading(true);
     try {
       const { data } = await axios.post(
         `${backendUrl}/api/color/deleteColor`,
-        { colorId },
+        { colorId: id },
         {
           headers: {
-            token: token,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -111,7 +107,7 @@ const ColorManager = ({ token }) => {
       if (data.success) {
         toast.success("Color deleted successfully");
         getColorList();
-        setColors((prev) => prev.filter((c) => c._id !== colorId));
+        setColors((prev) => prev.filter((c) => c._id !== id));
       } else {
         toast.error(data.message || "Error while deleting color");
       }
@@ -125,7 +121,8 @@ const ColorManager = ({ token }) => {
 
   useEffect(() => {
     getColorList();
-  }, []);
+  }, [getColorList]);
+
   return (
     <div className="max-w-3xl mx-auto mt-10 px-4">
       <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
@@ -200,4 +197,4 @@ const ColorManager = ({ token }) => {
   );
 };
 
-export default ColorManager;
+export default memo(ColorManager);

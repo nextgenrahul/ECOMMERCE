@@ -1,7 +1,7 @@
 import React from "react";
 import { assets } from "../assets/admin_assets/assets.js";
 
-const Navbar = ({setToken}) => {
+const Navbar = ({logout}) => {
 
   return (
     <div className="flex items-center py-2 px-[4%] justify-between">
@@ -9,10 +9,10 @@ const Navbar = ({setToken}) => {
         className="w-10 object-contain"
         src={assets.logo_icon}
         alt="Logo"
-      />{" "}
-      <button onClick={() => setToken("")} className="bg-gray-600 text-white px-2 py-2 sm:px-7 sm:py-2 rounded-full text-xs sm:text-sm">Logout</button>
+      />
+      <button onClick={logout} className="bg-gray-600 text-white px-2 py-2 sm:px-7 sm:py-2 rounded-full text-xs sm:text-sm">Logout</button>
     </div>
   );
 };
 
-export default Navbar;
+export default React.memo(Navbar);

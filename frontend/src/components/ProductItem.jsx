@@ -4,13 +4,14 @@ import { Link } from "react-router-dom";
 
 const ProductItem = ({ id, slug, image, name, price }) => {
   const { currency } = useContext(AppContext);
+
   return (
     <Link className="text-gray-700 cursor-pointer" to={`/product/${slug}`}>
-      <div className="overflow-hidden">
+      <div className="aspect-[4/5] overflow-hidden rounded-md">
         <img
-          className="hover:scale-110 transition ease-in-out"
+          className="w-full h-full object-cover hover:scale-110 transition-transform duration-300 ease-in-out"
           src={image[0]}
-          alt=""
+          alt={name}
         />
       </div>
       <p className="pt-3 pb-1 text-sm">{name}</p>

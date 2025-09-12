@@ -1,8 +1,8 @@
 import axios from "axios";
-import { useEffect, useState, createContext } from "react";
+import { useEffect, useState, createContext, useCallback } from "react";
 import { toast } from "react-toastify";
 import Loader from "../components/Loader";
-import { useContext } from "react";
+// import { useContext } from "react";
 
 export const AdminContext = createContext();
 
@@ -11,7 +11,7 @@ export const AdminContextProvider = ({ children, token }) => {
   const [categoryAllData, setCategoryAllData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const getCategoryDataAll = async () => {
+  const getCategoryDataAll = useCallback(async () => {
     try {
       const response = await axios.get(`${backendUrl}/api/category/list`, {
         headers: {
@@ -26,13 +26,13 @@ export const AdminContextProvider = ({ children, token }) => {
       console.error(error);
       toast.error("Failed to fetch categories");
     }
-  };
+  }, [backendUrl, token]);
 
   useEffect(() => {
     if (token) {
       getCategoryDataAll();
     }
-  }, [token]);
+  }, [token, getCategoryDataAll]);
 
   const value = {
     backendUrl,

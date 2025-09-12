@@ -59,4 +59,4 @@ const Siderbar = () => {
   );
 };
 
-export default Siderbar;
+export default React.memo(Siderbar);

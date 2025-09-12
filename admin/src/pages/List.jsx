@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { backendUrl, currency } from "../App";
 import { toast } from "react-toastify";
 import { AdminContext } from "../context/AdminContext";
@@ -8,22 +8,21 @@ import { Link } from "react-router-dom";
 const List = ({ token }) => {
   const [list, setList] = useState([]);
   const { setLoading } = useContext(AdminContext);
-  const fetchList = async () => {
+  const fetchList = useCallback(async () => {
     try {
       setLoading(true);
       const response = await axios.get(backendUrl + "/api/product/list");
       if (response.data.success) {
         setList(response.data.products);
       } else {
-        toast.error(response.data.message);
+        console.log(response.data.message)
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
     } finally {
       setLoading(false);
     }
-  };
+  }, [setLoading]);
 
   const removeProduct = async (id) => {
     try {
@@ -37,7 +36,7 @@ const List = ({ token }) => {
         toast.success(response.data.message);
         await fetchList();
       } else {
-        toast.error(response.data.message);
+        console.log(response.data.message)
       }
     } catch (error) {
       console.log(error);
@@ -49,7 +48,7 @@ const List = ({ token }) => {
 
   useEffect(() => {
     fetchList();
-  }, []);
+  }, [fetchList]);
   return (
    <>
   <p className="mb-2 text-lg font-semibold text-gray-700">All Products List</p>

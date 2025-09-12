@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
-import Siderbar from "./components/Siderbar";
+import Sidebar from "./components/Siderbar"; // ✅ Fixed spelling (was Siderbar)
 import { Route, Routes, useLocation } from "react-router-dom";
 import Add from "./pages/Add";
 import List from "./pages/List";
@@ -16,7 +16,7 @@ import AddColor from "./pages/AddColor";
 import { jwtDecode } from "jwt-decode";
 import Loader from "./components/Loader";
 
-export const backendUrl = import.meta.env.VITE_BACKEND_URL;
+export const backendUrl = import.meta.env.VITE_BACKEND_URL || "";
 export const currency = "$";
 
 const App = () => {
@@ -26,7 +26,7 @@ const App = () => {
 
   // ✅ Check if token is valid on mount
   useEffect(() => {
-    const savedToken = localStorage.getItem("token");
+    const savedToken = localStorage.getItem("token") || "";
 
     if (savedToken) {
       try {
@@ -43,14 +43,16 @@ const App = () => {
     }
   }, []);
 
-  // ✅ Save token in localStorage whenever it changes
   useEffect(() => {
     if (token) {
       localStorage.setItem("token", token);
     }
   }, [token]);
+  const logout = useCallback(async () => {
+    localStorage.removeItem("token");
+    setToken("")
+  }, [])
 
-  // ✅ Loader for page transition
   useEffect(() => {
     setLoading(true);
     const timer = setTimeout(() => {
@@ -71,24 +73,18 @@ const App = () => {
           <Login setToken={setToken} />
         ) : (
           <>
-            <Navbar setToken={setToken} />
+            <Navbar logout={logout} />
             <hr />
             <div className="flex w-full">
-              <Siderbar />
+              <Sidebar />
               <div className="w-[70%] mx-auto ml-[max(5vw, 25px)] my-8 text-gray-600 text-base">
                 <Routes>
                   <Route path="/" element={<Add token={token} />} />
                   <Route path="/add" element={<Add token={token} />} />
                   <Route path="/list" element={<List token={token} />} />
                   <Route path="/orders" element={<Orders token={token} />} />
-                  <Route
-                    path="/addCategories"
-                    element={<Category token={token} />}
-                  />
-                  <Route
-                    path="/addSubCategories"
-                    element={<SubCategory token={token} />}
-                  />
+                  <Route path="/addCategories" element={<Category token={token} />} />
+                  <Route path="/addSubCategories" element={<SubCategory token={token} />} />
                   <Route path="/order-return" element={<OrderReturn />} />
                   <Route path="/addColor" element={<AddColor token={token} />} />
                 </Routes>

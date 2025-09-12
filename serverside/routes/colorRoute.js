@@ -6,6 +6,6 @@ const colorRoute = express.Router();
 colorRoute.post("/addColor", adminAuth, addColor);
 colorRoute.post("/updateColor", adminAuth, updateColor);
 colorRoute.post("/deleteColor", adminAuth, deleteColor);
-colorRoute.get("/list", adminAuth, getColorList)
+colorRoute.get("/list", adminAuth, getColorList);
 
 export default colorRoute;
