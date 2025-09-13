@@ -17,9 +17,6 @@ const whiteList = [
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:5175",
-  // "https://ecommerce-admin-three-lovat.vercel.app",
-  // "https://ecommerce-frontend-sigma-two-40.vercel.app",
-  // "https://serverside-t8qp.onrender.com/"
   "https://ecommerce-gqp2.onrender.com/",
   "https://ecommerce-1-qxo4.onrender.com/"
 
