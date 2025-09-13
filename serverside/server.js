@@ -17,8 +17,8 @@ const whiteList = [
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:5175",
-  "https://ecommerce-gqp2.onrender.com/",
-  "https://ecommerce-1-qxo4.onrender.com/"
+  "https://ecommerce-gqp2.onrender.com",
+  "https://ecommerce-1-qxo4.onrender.com"
 
 ];
 app.use(
