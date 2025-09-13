@@ -3,6 +3,7 @@ import { backendUrl } from "../App";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { AdminContext } from "../context/AdminContext";
+import { useEffect } from "react";
 
 const Login = ({ setToken }) => {
   const [email, setEmail] = useState("");
@@ -34,6 +35,9 @@ const Login = ({ setToken }) => {
       setLoading(false);
     }
   };
+  useEffect(() =>{
+    alert("Please Use Email : admin@gmail.com     And Password: 123")
+  }, [])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
