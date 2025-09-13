@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { AdminContext } from "../context/AdminContext";
@@ -7,14 +7,13 @@ const OrderReturn = () => {
   const { backendUrl, token } = useContext(AdminContext);
   const [orders, setOrders] = useState([]);
   const [updates, setUpdates] = useState({});
-  const fetchAllOrders = async () => {
-    // if (!token) return;
 
+  const fetchAllOrders = useCallback(async () => {
     try {
       const response = await axios.post(
         `${backendUrl}/api/order/list`,
         {},
-        { headers: { token } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (response.data.success) {
@@ -23,9 +22,10 @@ const OrderReturn = () => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.message || "Failed to fetch orders");
     }
-  };
+  }, [backendUrl, token]);
+
   const getOrder = (orderId) => {
     return orders.find((o) => o._id === orderId);
   };
@@ -43,32 +43,42 @@ const OrderReturn = () => {
   const handleUpdate = async (orderId) => {
     const data = updates[orderId] || {};
 
-    // fallback value agar updates me nahi hai toh order se le lo
     const status =
       data.status !== undefined
         ? data.status
         : getOrder(orderId)?.returnOrder?.status;
-      const comments = data.comments !== undefined ? data.comments : getOrder(orderId)?.returnOrder?.comments;
+
+    const comments =
+      data.comments !== undefined
+        ? data.comments
+        : getOrder(orderId)?.returnOrder?.comments;
 
     if (!status) return toast.error("Select a status");
 
     try {
       if (status === "completed") {
         const response = await axios.post(
-          `${backendUrl}/api/returns/deleteOrder/${orderId}/${status}/${comments}`
+          `${backendUrl}/api/returns/deleteOrder/${orderId}/${status}/${comments}`,
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
         );
+
         if (response.data.success) {
-          console.log(response.data.data)
           toast.success(response.data.message);
           fetchAllOrders();
         } else {
           toast.error(response.data.message);
         }
       } else {
-        const res = await axios.put(`${backendUrl}/api/returns/${orderId}`, {
-          status: status,
-          comments: data.comments || "",
-        });
+        const res = await axios.put(
+          `${backendUrl}/api/returns/${orderId}`,
+          {
+            status: status,
+            comments: comments || "",
+          },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
         if (res.data.success) {
           toast.success("Return status updated");
           setUpdates((prev) => ({ ...prev, [orderId]: {} }));
@@ -78,16 +88,17 @@ const OrderReturn = () => {
         }
       }
     } catch (err) {
+      console.log(err.message)
       toast.error("Failed to update status");
     }
   };
 
   useEffect(() => {
     fetchAllOrders();
-  }, [token]);
+  }, [token, fetchAllOrders]);
 
   return (
-    <div className="p-4 md:w-full overflow-x-auto ">
+    <div className="p-4 md:w-full overflow-x-auto">
       <h2 className="text-xl font-bold mb-4">Manage Return Orders</h2>
 
       <table className="w-full border">
@@ -110,8 +121,8 @@ const OrderReturn = () => {
                 className={`${
                   order.returnOrder.status === "completed"
                     ? "bg-green-300"
-                    : null
-                } text-sm border-t `}
+                    : ""
+                } text-sm border-t`}
               >
                 <td className="p-2 border">{order._id}</td>
                 <td className="p-2 border">{order.userId}</td>

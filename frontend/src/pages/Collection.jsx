@@ -17,7 +17,6 @@ const Collection = () => {
   const [subObj, setSubObj] = useState([]);
   const [sortType, setSortType] = useState("relevent");
   const [filterProducts, setFilterProduct] = useState([]);
-
   const applyFilter = () => {
     let productsCopy = products?.slice();
     if (showSearch && search) {
@@ -103,23 +102,23 @@ const Collection = () => {
   };
 
   useEffect(() => {
-  if (categoryAllData.length === 0) return; 
+    if (categoryAllData.length === 0) return;
 
-  const catParam = searchParams.get("category");
-  const subParam = searchParams.get("subCategory");
+    const catParam = searchParams.get("category");
+    const subParam = searchParams.get("subCategory");
 
-  const categoriesFromURL = catParam ? catParam.split("_") : [];
-  const subCategoriesFromURL = subParam ? subParam.split("_") : [];
+    const categoriesFromURL = catParam ? catParam.split("_") : [];
+    const subCategoriesFromURL = subParam ? subParam.split("_") : [];
 
-  setCategory(categoriesFromURL);
-  setSubCategory(subCategoriesFromURL);
+    setCategory(categoriesFromURL);
+    setSubCategory(subCategoriesFromURL);
 
-  const subObjFromURL = {};
-  categoriesFromURL.forEach((cat) => {
-    subObjFromURL[cat] = getSubCategories(cat);
-  });
-  setSubObj(subObjFromURL);
-}, [categoryAllData]); 
+    const subObjFromURL = {};
+    categoriesFromURL.forEach((cat) => {
+      subObjFromURL[cat] = getSubCategories(cat);
+    });
+    setSubObj(subObjFromURL);
+  }, [categoryAllData]);
 
 
   useEffect(() => {
@@ -133,7 +132,7 @@ const Collection = () => {
   }, [sortType]);
 
   return (
-    <div className="flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t">
+    <div className="flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t px-10">
       <div className="min-w-6">
         <p
           onClick={() => setShowFilter(!showFilter)}
@@ -154,9 +153,8 @@ const Collection = () => {
         </p>
         {/* Category Filter */}
         <div
-          className={`border border-gray-300 pl-5 py-3 mt-6 ${
-            showFilter ? "" : "hidden"
-          } sm:block`}
+          className={`border border-gray-300 pl-5 py-3 mt-6 ${showFilter ? "" : "hidden"
+            } sm:block`}
         >
           <p className="mb-3 text-sm font-medium">CATEGORIES</p>
           <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
@@ -182,9 +180,8 @@ const Collection = () => {
           ""
         ) : (
           <div
-            className={`border border-gray-300 pl-5 py-3 mt-6 ${
-              showFilter ? "" : "hidden"
-            } sm:block`}
+            className={`border border-gray-300 pl-5 py-3 mt-6 ${showFilter ? "" : "hidden"
+              } sm:block`}
           >
             <p className="mb-3 text-sm font-medium">Sub Category</p>
             <div className="flex flex-col gap-2 text-sm font-light text-gray-700">

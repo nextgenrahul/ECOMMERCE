@@ -14,7 +14,7 @@ const LatestCollection = () => {
   const [products, setProducts] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [limit] = useState(5);
+  const [limit] = useState(20);
 
   const getProductsData = async () => {
     try {
@@ -27,7 +27,6 @@ const LatestCollection = () => {
           setProducts(response.data.data);
           setTotalPages(response.data.totalPages);
         } else {
-          // toast.error(response.data.message);
           console.log(response.data.message)
         }
       }
@@ -42,7 +41,7 @@ const LatestCollection = () => {
   }, [page, setPage]);
 
   return (
-    <div className="my-10">
+    <div className="my-1 px-10">
       <div className="text-center py-8 text-3xl">
         <Title text1={"Latest"} text2={"COLLECTIONS"} />
         <p className="w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600">

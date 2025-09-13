@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -19,7 +19,7 @@ export const AppContextProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [userName, setUserName] = useState({});
 
-  const getUserData = async () => {
+  const getUserData = useCallback(async () => {
     if (!backendUrl) return toast.error("Backend URL is not defined.");
     try {
       axios.defaults.withCredentials = true;
@@ -34,13 +34,13 @@ export const AppContextProvider = ({ children }) => {
         error?.response?.data?.message || "Failed to fetch user data"
       );
     }
-  };
+  }, [backendUrl]);
 
   const addToCart = async (itemId, size) => {
-    if(!size ){
-      return toast.error("Sizes are requried");
-    }
-    if(!itemId ){
+    // if (!size) {
+    //   return toast.error("Sizes are requried");
+    // }
+    if (!itemId) {
       return toast.error("Item Id are requried");
     }
     let cartData = structuredClone(cartItems);
@@ -81,7 +81,7 @@ export const AppContextProvider = ({ children }) => {
     return totalCount;
   };
   const updateQuantity = async (itemId, size, quantity, productSizesArr) => {
-    const selectedSizeObj = productSizesArr.find((s) => s.size === size);
+    const selectedSizeObj = productSizesArr?.find((s) => s.size === size);
 
     if (!selectedSizeObj) {
       toast.error("Invalid size selected!");
@@ -106,11 +106,15 @@ export const AppContextProvider = ({ children }) => {
     if (quantity === 0) {
       delete cartData[itemId][size];
       if (Object.keys(cartData[itemId]).length === 0) {
+        localStorage.removeItem("cartData");
+
         delete cartData[itemId];
       }
     }
 
     setCartItems(cartData);
+    localStorage.setItem("cartData", JSON.stringify(cartData));
+
 
     if (isLoggedin) {
       try {
@@ -152,7 +156,7 @@ export const AppContextProvider = ({ children }) => {
     }
   };
 
-  const getProductsData = async () => {
+  const getProductsData = useCallback(async () => {
     try {
       const response = await axios.get(backendUrl + "/api/product/list");
       if (response.data.success) {
@@ -162,26 +166,31 @@ export const AppContextProvider = ({ children }) => {
       console.log(error);
       toast.error(error.message);
     }
-  };
+  }, [backendUrl]);
 
   useEffect(() => {
     getProductsData();
     const init = async () => {
-      const res = await axios.get(backendUrl + "/api/user/auth-check", {
-        withCredentials: true,
-      });
+      try {
+        const res = await axios.get(backendUrl + "/api/user/auth-check", {
+          withCredentials: true,
+        });
 
-      if (res.data?.loggedIn) {
-        setIsLoggedin(true);
-        setUserName(res.data.user);
-        console.log("User is logged in");
-      } else {
-        console.log("User is not logged in");
+        if (res?.data?.loggedIn) {
+          setIsLoggedin(true);
+          setUserName(res.data.user);
+          console.log("User is logged in");
+        } else {
+          setIsLoggedin(false)
+        }
+
+      } catch (error) {
+        console.log(error.message)
       }
-    };
 
+    };
     init();
-  }, []);
+  }, [backendUrl, getProductsData]);
 
   const getCartAmount = () => {
     let totalAmount = 0;
@@ -196,7 +205,7 @@ export const AppContextProvider = ({ children }) => {
     return totalAmount;
   };
 
-  const getCategoryDataAll = async () => {
+  const getCategoryDataAll = useCallback(async () => {
     try {
       const response = await axios.get(`${backendUrl}/api/category/list`, {
         withCredentials: true,
@@ -208,15 +217,14 @@ export const AppContextProvider = ({ children }) => {
       console.error(error);
       toast.error("Failed to fetch categories");
     }
-  };
+  }, [backendUrl]);
+
+
 
   useEffect(() => {
-    if (isLoggedin) {
-      getCategoryDataAll();
-      getUserCart();
-    }
-  }, [isLoggedin]);
-
+    getCategoryDataAll();
+    getUserCart();
+  }, [])
   const value = {
     backendUrl,
     isLoggedin,

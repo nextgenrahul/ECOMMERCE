@@ -3,7 +3,7 @@ import Title from "../components/Title";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 const Order = () => {
   const { backendUrl, currency, products } = useContext(AppContext);
 
@@ -69,7 +69,7 @@ const Order = () => {
   }, [reason]);
 
   return (
-    <div className="border-t pt-16">
+    <div className="border-t pt-16  px-10">
       <div className="text-2xl">
         <Title text1={"MY"} text2={"ORDERS"} />
       </div>
@@ -122,7 +122,7 @@ const Order = () => {
                 {order.returnOrder?.status ? null : (<p>
                   Status: <span className="text-green-600">{order.status}</span>
                 </p>)}
-                
+
                 <p>Payment: {order.paymentMethod}</p>
                 <p>Date: {new Date(order.date).toDateString()}</p>
 
@@ -130,7 +130,7 @@ const Order = () => {
                   <div className="mt-2">
                     <p>
                       {" "}
-                      Return Status : 
+                      Return Status :
                       <span className="ml-1 text-green-600">
                         {order.returnOrder.status}
                       </span>{" "}

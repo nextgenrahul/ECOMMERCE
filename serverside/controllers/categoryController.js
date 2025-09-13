@@ -4,7 +4,7 @@ import CategoryModel from "../models/categoryModel.js";
 const getCategoryList = async (req, res) => {
     try {
         const data = await CategoryModel.find({});
-
+        
         if (!data || data.length === 0) {
             return res.json({ success: false, message: "No categories found" });
         }
@@ -36,7 +36,6 @@ const addCategory = async (req, res) => {
     } catch (error) {
         res.json({ success: false, message: error.message })
     }
-
 }
 
 const addSubcategory = async (req, res) => {

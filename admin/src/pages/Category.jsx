@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { AdminContext } from "../context/AdminContext";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -6,17 +6,17 @@ import { toast } from "react-toastify";
 const Category = ({ token }) => {
   const [category, setCategory] = useState("");
   const [categoryData, setCategoryData] = useState([]);
-  const { backendUrl , setLoading} = useContext(AdminContext);
+  const { backendUrl, setLoading } = useContext(AdminContext);
 
   const capitalizeFirst = (str) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
-  const getCategoryData = async () => {
+  const getCategoryData = useCallback(async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       const response = await axios.get(`${backendUrl}/api/category/list`, {
-        headers: { token },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (response.data.success) {
         setCategoryData(response.data.data);
@@ -24,14 +24,14 @@ const Category = ({ token }) => {
     } catch (error) {
       console.error(error);
       toast.error("Failed to fetch categories");
-    }finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [backendUrl, setLoading, token]);
 
   useEffect(() => {
     getCategoryData();
-  }, []);
+  }, [getCategoryData]);
 
   const handleAdd = async (e) => {
     e.preventDefault();
@@ -39,15 +39,13 @@ const Category = ({ token }) => {
       toast.error("Category must be entered");
       return;
     }
-    setLoading(true)
+    setLoading(true);
     try {
-      const payload = {
-        category: capitalizeFirst(category),
-      };
+      const payload = { category: capitalizeFirst(category) };
       const response = await axios.post(
         `${backendUrl}/api/category/add`,
         payload,
-        { headers: { token } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       if (response.data.success) {
         await getCategoryData();
@@ -59,25 +57,24 @@ const Category = ({ token }) => {
     } catch (error) {
       console.error("Error while adding category:", error);
       toast.error("Something went wrong!");
-    }finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = useCallback(async (id) => {
     if (!id) {
       toast.error("Id is required");
       return;
     }
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await axios.delete(
         `${backendUrl}/api/category/delete/${id}`,
-        { headers: { token } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       if (response.data.success) {
-        setCategoryData((prev) => prev.filter((c) => c._id !== id)); 
-
+        setCategoryData((prev) => prev.filter((c) => c._id !== id));
         toast.success(response.data.message);
       } else {
         toast.error(response.data.message);
@@ -85,10 +82,10 @@ const Category = ({ token }) => {
     } catch (error) {
       console.error("Error while deleting category:", error);
       toast.error("Something went wrong!");
-    }finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [backendUrl, setLoading, token]);
 
   return (
     <div className="p-6 bg-white text-black rounded shadow max-w-md mx-auto">
@@ -126,7 +123,7 @@ const Category = ({ token }) => {
                 onClick={() => handleDelete(cat._id)}
                 className="text-red-500 hover:text-red-700 text-sm"
               >
-                ❌
+                Delete
               </button>
             </li>
           ))}

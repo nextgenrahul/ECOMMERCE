@@ -14,7 +14,7 @@ const RelatedProduct = ({ category, subCategory }) => {
             productsCopy = productsCopy.filter((item) => subCategory === item.subCategory)
             setRelated(productsCopy)
         }
-    },[products])
+    },[products, category, subCategory])
   return (
      <div className="my-24">
       <div className="text-center text-3xl py-2">

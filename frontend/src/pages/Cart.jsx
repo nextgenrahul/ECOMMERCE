@@ -38,7 +38,7 @@ const Cart = () => {
   }, [cartItems, products]);
 
   return (
-    <div className="border-t pt-14">
+    <div className="border-t pt-14 px-10">
       <div className="mb-3">
         <Title text1={"Your"} text2={"CART"} />
       </div>
@@ -97,11 +97,11 @@ const Cart = () => {
                     e.target.value === "" || e.target.value === "0"
                       ? null
                       : updateQuantity(
-                          item._id,
-                          item.size,
-                          Number(e.target.value),
-                          productData.sizes
-                        )
+                        item._id,
+                        item.size,
+                        Number(e.target.value),
+                        productData.sizes
+                      )
                   }
                   className="border max-w-10 sm:max-w-20 px-1 sm:px-2 py-1"
                   type="number"
@@ -109,7 +109,7 @@ const Cart = () => {
                   defaultValue={item.quantity}
                 />
                 <img
-                  onClick={() => updateQuantity(item._id, item.size, 0)}
+                  onClick={() => updateQuantity(item._id, item.size, 0, productData.sizes )}
                   className="w-4 mr-4 sm:w-5 cursor-pointer"
                   src={assets.bin_icon}
                   alt=""

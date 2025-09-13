@@ -52,8 +52,8 @@ import p_img48 from './p_img48.png'
 import p_img49 from './p_img49.png'
 import p_img50 from './p_img50.png'
 import p_img51 from './p_img51.png'
+import front_image from "./frontrole.avif"
 import p_img52 from './p_img52.png'
-
 
 import logo from './logo.png'
 import hero_img from './hero_img.png'
@@ -82,8 +82,11 @@ import main_icon from "./gmail.png";
 import lock_icon from "./lock_icon.svg";
 import logo_icon from "./logo_icon.svg";
 import hero_i from "./her.jpg";
-
+import cartoon from "./cartoon3ed.jpg";
+import front2 from "./front2.jpg"
 export const assets = {
+    front2,
+    cartoon,
     logoIcon,
     arrow_icon,
     header_img,
@@ -93,7 +96,6 @@ export const assets = {
     logo_icon,
     search_icon,
     profile_icon,
-    cart_icon,
     logo,
     hero_img,
     cart_icon,
@@ -111,5 +113,6 @@ export const assets = {
     stripe_logo,
     hero_i,
     cross_icon,
+    front_image
 }
 

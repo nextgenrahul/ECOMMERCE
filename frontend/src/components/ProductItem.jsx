@@ -6,18 +6,26 @@ const ProductItem = ({ id, slug, image, name, price }) => {
   const { currency } = useContext(AppContext);
 
   return (
-    <Link className="text-gray-700 cursor-pointer" to={`/product/${slug}`}>
-      <div className="aspect-[4/5] overflow-hidden rounded-md">
+    <Link
+      to={`/product/${slug}`}
+      className="block rounded-2xl border border-gray-200 hover:border-gray-300 shadow-2xl hover:shadow-md transition-all duration-300 bg-white group cursor-pointer"
+    >
+      <div className="aspect-[4/5] overflow-hidden rounded-t-2xl">
         <img
-          className="w-full h-full object-cover hover:scale-110 transition-transform duration-300 ease-in-out"
+          className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500 ease-in-out"
           src={image[0]}
           alt={name}
         />
       </div>
-      <p className="pt-3 pb-1 text-sm">{name}</p>
-      <p className="text-sm font-medium">
-        {currency} {price}
-      </p>
+
+      <div className="p-4">
+        <p className="text-gray-800 font-medium text-sm truncate group-hover:text-gray-900">
+          {name}
+        </p>
+        <p className="text-gray-600 text-sm font-semibold mt-1">
+          {currency} {price}
+        </p>
+      </div>
     </Link>
   );
 };

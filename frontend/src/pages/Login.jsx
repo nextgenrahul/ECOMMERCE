@@ -1,13 +1,12 @@
 import React, { useContext, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { assets } from "../assets/images/assets";
 import { AppContext } from "../context/AppContext";
 import { toast } from "react-toastify";
 import axios from "axios";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { backendUrl, setIsLoggedin, setLoading, getUserData, userName } = useContext(AppContext);
+  const { backendUrl, setIsLoggedin, setLoading, getUserData } = useContext(AppContext);
   const [isLogin, setIsLogin] = useState(true);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -60,7 +59,7 @@ const Login = () => {
 
   return (
     <>
-      <div className="mt-10 flex items-center justify-center bg-white">
+      <div className="mt-10 flex items-center justify-center bg-white px-10">
         <div className="w-full max-w-md p-8 rounded-lg bg-white">
           <h2 className="text-2xl font-bold text-center mb-6">
             {isLogin ? "Login" : "Sign Up"}

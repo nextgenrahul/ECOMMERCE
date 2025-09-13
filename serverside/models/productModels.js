@@ -9,8 +9,9 @@ const productSchema = new mongoose.Schema({
     originalPrice: { type: Number }, // Admin
     discountPercent: { type: Number }, //Admin
     image: { type: [String], required: true }, //  Admin
-    category: { type: String,  }, // Admin
-    subCategory: { type: String,  }, // Admin
+    category: { type: String, required: true }, // Admin
+    subCategory: { type: String, required: true }, // Admin
+    gender: { type: String }, // Admin
     productGroupId: { type: String }, // Admin
     sizes: [
         {

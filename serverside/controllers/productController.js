@@ -13,6 +13,7 @@ const addProduct = async (req, res) => {
             category,
             subCategory,
             sizes,
+            gender,
             bestseller,
             productGroupId,
             color_id
@@ -58,6 +59,8 @@ const addProduct = async (req, res) => {
         const finalGroupId = productGroupId;
 
         // Create product
+        const isBestSeller = bestseller !== undefined ? bestseller : true;
+
         const product = new productModel({
             name,
             description,
@@ -66,10 +69,12 @@ const addProduct = async (req, res) => {
             image: imagesUrl,
             category,
             subCategory,
+            gender,
             sizes: parsedSizes,
-            bestseller: bestseller === "true",
-            productGroupId: finalGroupId ? finalGroupId : "",
+            bestseller: isBestSeller,
+            productGroupId: finalGroupId || "",
         });
+
 
         const savedProduct = await product.save();
 
@@ -188,7 +193,7 @@ const getAllGroupIdData = async (req, res) => {
 
 const getPaginateProduct = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 5;
+    const limit = parseInt(req.query.limit) || 20;
     const skip = (page - 1) * limit;
 
     try {

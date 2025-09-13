@@ -7,7 +7,6 @@ const TrackOrder = () => {
   const [orderId, setOrderId] = useState("");
   const [trackOrder, setTrackOrder] = useState(null);
   const { backendUrl, products } = useContext(AppContext);
-  const [delivered, setDelivered] = useState("");
 
   const trackSubmitButton = async (e) => {
     e.preventDefault();

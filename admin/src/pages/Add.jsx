@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { assets } from "../assets/admin_assets/assets";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -17,6 +17,7 @@ const Add = ({ token }) => {
   const [bestseller, setBestSeller] = useState(false);
   const [category, setCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
+  const [gender, setGender] = useState("");
   const { categoryAllData, backendUrl, setLoading } = useContext(AdminContext);
   const [colorPlate, setColorPlate] = useState(false);
   const [colorData, setColorData] = useState([]);
@@ -28,12 +29,12 @@ const Add = ({ token }) => {
   const [searchParams] = useSearchParams();
   const existingGroupId = searchParams.get("groupId");
 
-  const getSubCategoryobj = () => {
+  const getSubCategoryobj = useCallback(() => {
     const found = categoryAllData.find((sub) => sub.category === category);
     return found ? found.subCategories : [];
-  };
+  }, [category, categoryAllData]);
 
-  const getColorPlate = async () => {
+  const getColorPlate = useCallback(async () => {
     try {
       const response = await axios.get(`${backendUrl}/api/color/list`, {
         headers: {
@@ -49,25 +50,29 @@ const Add = ({ token }) => {
       console.log(error);
       toast.error(error.message);
     }
-  };
+  }, [backendUrl, token]);
 
-  const toggleSize = (size) => {
-    if (sizes.includes(size)) {
-      setSizes(sizes.filter((s) => s !== size));
-      const updatedStock = { ...stockValues };
-      delete updatedStock[size];
-      setStockValues(updatedStock);
-    } else {
-      setSizes([...sizes, size]);
-    }
-  };
+  const toggleSize = useCallback(
+    (size) => {
+      if (sizes.includes(size)) {
+        setSizes(sizes.filter((s) => s !== size));
+        const updatedStock = { ...stockValues };
+        delete updatedStock[size];
+        setStockValues(updatedStock);
+      } else {
+        setSizes([...sizes, size]);
+      }
+    },
+    [sizes, stockValues]
+  );
 
-  const onSubmitHandler = async (e) => {
+
+  const onSubmitHandler = useCallback(async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
-      const finalGroupId =
-        colorPlate ? existingGroupId || Date.now().toString() : "";
+
+      const finalGroupId = colorPlate ? existingGroupId || Date.now().toString() : "";
       const formData = new FormData();
       const formattedSizes = sizes.map((size) => ({
         size: size,
@@ -85,6 +90,7 @@ const Add = ({ token }) => {
       formData.append("originalPrice", original);
       formData.append("category", category);
       formData.append("subCategory", subCategory);
+      formData.append("gender", gender);
       formData.append("sizes", JSON.stringify(formattedSizes));
       formData.append("bestSeller", bestseller ? "true" : "false");
       formData.append("productGroupId", finalGroupId);
@@ -126,11 +132,34 @@ const Add = ({ token }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [
+    name,
+    description,
+    image1,
+    image2,
+    image3,
+    image4,
+    price,
+    original,
+    category,
+    subCategory,
+    sizes,
+    stockValues,
+    bestseller,
+    colorPlate,
+    gender,
+    existingGroupId,
+    selectedColorId,
+    deliveryDate,
+    backendUrl,
+    token,
+    setLoading
+  ]);
+
 
   useEffect(() => {
     getColorPlate();
-  }, []);
+  }, [getColorPlate]);
 
   return (
     <form
@@ -238,45 +267,61 @@ const Add = ({ token }) => {
           />
         </div>
       </div>
+      {/* Man Women Selction*/}
+      {/* Man Women Selection */}
+      <div className="flex flex-col sm:flex-row gap-2 w-full sm:gap-8">
+        <div className="w-full">
+          <p className="mb-2">Gender</p>
+          <select
+            value={gender}
+            onChange={(e) => setGender(e.target.value)}
+            className="w-full px-3 py-2"
+          >
+            <option value="">Select</option>
+            <option value="man">Man</option>
+            <option value="woman">Woman</option>
+            <option value="child">Child</option>
+          </select>
+        </div>
+      </div>
 
       {/* Sizes (only for clothing) */}
       {(category.toLowerCase() === "clothing" ||
         category.toLowerCase() === "cloths" ||
         category.toLowerCase() === "cloth") && (
-        <div className="mb-6">
-          <p className="mb-2 font-medium text-gray-700">Clothing Size</p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {["XS", "S", "M", "L", "XL", "XXL", "2XL", "3XL"].map((size) => (
-              <div key={size} className="relative group">
-                <div onClick={() => toggleSize(size)}>
-                  <p
-                    className={`${
-                      sizes.includes(size) ? "bg-pink-200" : "bg-slate-200"
-                    } px-4 py-2 text-center cursor-pointer rounded shadow transition hover:scale-105`}
-                  >
-                    {size}
-                  </p>
+          <div className="mb-6">
+            <p className="mb-2 font-medium text-gray-700">Clothing Size</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {["XS", "S", "M", "L", "XL", "XXL", "2XL", "3XL"].map((size) => (
+                <div key={size} className="relative group">
+                  <div onClick={() => toggleSize(size)}>
+                    <p
+                      className={`${sizes.includes(size) ? "bg-pink-200" : "bg-slate-200"
+                        } px-4 py-2 text-center cursor-pointer rounded shadow transition hover:scale-105`}
+                    >
+                      {size}
+                    </p>
+                  </div>
+                  {sizes.includes(size) && (
+                    <input
+                      type="number"
+                      min="0"
+                      placeholder="Stock"
+                      value={stockValues[size] || ""}
+                      onChange={(e) =>
+                        setStockValues((prev) => ({
+                          ...prev,
+                          [size]: e.target.value,
+                        }))
+                      }
+                      className="mt-2 w-full px-3 py-1 border rounded bg-white shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                  )}
                 </div>
-                {sizes.includes(size) && (
-                  <input
-                    type="number"
-                    min="0"
-                    placeholder="Stock"
-                    value={stockValues[size] || ""}
-                    onChange={(e) =>
-                      setStockValues((prev) => ({
-                        ...prev,
-                        [size]: e.target.value,
-                      }))
-                    }
-                    className="mt-2 w-full px-3 py-1 border rounded bg-white shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  />
-                )}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* Color Selection */}
       <div className="mt-2">

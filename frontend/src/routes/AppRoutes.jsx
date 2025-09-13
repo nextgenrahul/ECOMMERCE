@@ -1,7 +1,7 @@
 import React from "react";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import EmailVerify from "../pages/EmailVerify";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MainHome from "../pages/MainHome";
 import Collection from "../pages/Collection";
@@ -21,49 +21,50 @@ import NotFound from "../components/NotFound";
 import ResetPassword from "../pages/ResetPassword";
 import FloatingInput from "../pages/FloatingInput";
 import Login from "../pages/Login";
-import { useEffect } from "react";
-import { useContext } from "react";
+// import { useEffect } from "react";
+// import { useContext } from "react";
 import { AppContext } from "../context/AppContext";
 
 const AppRoutes = () => {
 
-  const {setLoading} = useContext(AppContext)
-  const location = useLocation();
-    useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 500);
+  // const { setLoading } = useContext(AppContext)
+  // const location = useLocation();
+  //   useEffect(() => {
+  //   setLoading(true);
+  //   const timer = setTimeout(() => {
+  //     setLoading(false);
+  //   );
 
-    return () => clearTimeout(timer);
-  }, [location.pathname]);
+  //   return () => clearTimeout(timer);
+  // }, [location.pathname]);
 
 
   return (
-    <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">
-      <ToastContainer />
+    <div className="overflow-hidden">
       <MainNavbar />
-      <SearchBar />
-      <Routes>
-        <Route path="/login" element={<Login />}/>
-        <Route path="/" element={<MainHome />} />
-        <Route path="/collection" element={<Collection />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/product/:slug" element={<Product />} />
-        <Route path="/place-order" element={<PlaceOrder />} />
-        <Route path="/orders" element={<Order />} />
-        <Route path="/trackOrder" element={<TrackOrder />} />
-        <Route path="/verify" element={<Verify />} />
-        <Route path="/emailverify" element={<EmailVerify />}/>
-        <Route path="/resetpass" element={<ResetPassword />}/>
-        <Route path="/my" element={<FloatingInput />}/>
-        <Route path="*" element={<NotFound />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-      </Routes>
-      <Footer />
-    </div>
+        {/* <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]"> */}
+        <ToastContainer />
+        <SearchBar />
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<MainHome />} />
+          <Route path="/collection" element={<Collection />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/product/:slug" element={<Product />} />
+          <Route path="/place-order" element={<PlaceOrder />} />
+          <Route path="/orders" element={<Order />} />
+          <Route path="/trackOrder" element={<TrackOrder />} />
+          <Route path="/verify" element={<Verify />} />
+          <Route path="/emailverify" element={<EmailVerify />} />
+          <Route path="/resetpass" element={<ResetPassword />} />
+          <Route path="/my" element={<FloatingInput />} />
+          <Route path="*" element={<NotFound />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+        </Routes>
+        <Footer />
+      </div>
   );
 };
 

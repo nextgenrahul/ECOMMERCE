@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { AdminContext } from "../context/AdminContext";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -9,23 +9,24 @@ const SubCategory = ({ token }) => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectListCate, setSelectListCate] = useState("");
   const [subCategory, setSubCategory] = useState("");
-  const getCategoryData = async () => {
+
+  const getCategoryData = useCallback(async () => {
     try {
       const res = await axios.get(`${backendUrl}/api/category/list`, {
-        headers: { token },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (res.data.success) setCategoryData(res.data.data);
     } catch (err) {
       console.error(err);
       toast.error("Failed to fetch category list");
     }
-  };
+  }, [backendUrl, token]);
 
   useEffect(() => {
     getCategoryData();
-  }, []);
+  }, [getCategoryData]);
 
-  const handleAddSubCategory = async () => {
+  const handleAddSubCategory = useCallback(async () => {
     if (!selectedCategory || !subCategory) {
       return toast.error("Both fields are required");
     }
@@ -37,7 +38,7 @@ const SubCategory = ({ token }) => {
           category: selectedCategory,
           subCategory,
         },
-        { headers: { token } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (res.data.success) {
@@ -51,12 +52,12 @@ const SubCategory = ({ token }) => {
       console.error(err);
       toast.error("Something went wrong");
     }
-  };
+  }, [backendUrl, subCategory, token, selectedCategory, getCategoryData ]);
 
-  const getSubCategories = () => {
+  const getSubCategories = useMemo(() => {
     const found = categoryData.find((c) => c.category === selectListCate);
     return found?.subCategories || [];
-  };
+  }, [categoryData, selectListCate], );
 
   return (
     <div className="p-6 max-w-xl mx-auto bg-white shadow rounded">
@@ -106,7 +107,7 @@ const SubCategory = ({ token }) => {
 
         <select className="border px-3 py-2 rounded">
           <option value="">SubCategory</option>
-          {getSubCategories().map((sub, i) => (
+          {getSubCategories.map((sub, i) => (
             <option key={i}>{sub}</option>
           ))}
         </select>

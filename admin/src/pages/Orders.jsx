@@ -7,10 +7,9 @@ import { AdminContext } from "../context/AdminContext.jsx";
 
 const Orders = ({ token }) => {
   const [orders, setOrders] = useState([]);
-  const [statusHan, setStatusHan] = useState("");
-  const [reason, setReason] = useState("");
   const [orderUpdates, setOrderUpdates] = useState({});
   const { setLoading } = useContext(AdminContext);
+
   const fetchAllOrders = async () => {
     if (!token) return;
 
@@ -19,11 +18,14 @@ const Orders = ({ token }) => {
       const response = await axios.post(
         `${backendUrl}/api/order/list`,
         {},
-        { headers: { token } }
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // ✅ Proper Bearer token
+          },
+        }
       );
 
       if (response.data.success) {
-        // console.log(response.data.orders);
         setOrders(response.data.orders);
       } else {
         toast.error(response.data.message);
@@ -37,26 +39,29 @@ const Orders = ({ token }) => {
 
   const handleSubmit = async (orderId) => {
     const { status, reason } = orderUpdates[orderId] || {};
-
-    // if (!status || reason) {
-    //   return toast.error("Please select status and provide reason.");
-    // }
     setLoading(true);
 
     try {
       let response;
       if (status === "Delivered") {
         response = await axios.post(
-          backendUrl + "/api/order/status",
+          `${backendUrl}/api/order/status`,
           { orderId, status, reason, payment: true },
-          { headers: { token } }
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // ✅ Bearer Auth
+            },
+          }
         );
-
       } else {
         response = await axios.post(
-          backendUrl + "/api/order/status",
+          `${backendUrl}/api/order/status`,
           { orderId, status, reason },
-          { headers: { token } }
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // ✅ Bearer Auth
+            },
+          }
         );
       }
 
@@ -86,13 +91,11 @@ const Orders = ({ token }) => {
         {orders.map((order, index) => (
           <div
             key={index}
-            className={`
-              ${
+            className={`${
               order.status === "Delivered"
-                ? "inset-0 select-none bg-black opacity-30 no rounded pointer-events-none z-10"
+                ? "inset-0 select-none bg-black opacity-30 pointer-events-none"
                 : ""
-            }
-             relative grid grid-cols-1 md:grid-cols-3 gap-4 border p-4 rounded shadow items-start`}
+            } relative grid grid-cols-1 md:grid-cols-3 gap-4 border p-4 rounded shadow items-start`}
           >
             {order.status === "Delivered" && (
               <h2 className="absolute top-4 left-1/2 -translate-x-1/2 w-fit text-center text-sm sm:text-base md:text-lg lg:text-xl font-bold text-red-600 bg-white rounded-2xl p-2 z-20 shadow-md">
@@ -101,7 +104,7 @@ const Orders = ({ token }) => {
               </h2>
             )}
 
-            {/* Left Column - Order & Customer Info */}
+            {/* Left Column */}
             <div>
               <div className="flex items-center gap-3 mb-2">
                 <img
@@ -109,19 +112,15 @@ const Orders = ({ token }) => {
                   alt="Parcel"
                   className="h-5 w-5"
                 />
-
                 <p className="text-sm font-semibold">Order #{index + 1}</p>
               </div>
 
               <div className="text-sm text-gray-800 mb-2">
                 <p>Order Id : {order._id}</p>
-
                 <p className="font-medium">Customer:</p>
-
                 <p>
                   Name : {order.address.firstName} {order.address.lastName}
                 </p>
-
                 <p>
                   Address : {order.address.street}, {order.address.city},{" "}
                   {order.address.state}, {order.address.country} -{" "}
@@ -138,7 +137,7 @@ const Orders = ({ token }) => {
               </div>
             </div>
 
-            {/* Center Column - Ordered Items */}
+            {/* Center Column */}
             <div className="text-sm text-gray-800">
               <p className="font-medium mb-1">Ordered Items:</p>
               {order.items.map((item, idx) => (
@@ -148,7 +147,7 @@ const Orders = ({ token }) => {
               ))}
             </div>
 
-            {/* Right Column - Price & Status */}
+            {/* Right Column */}
             <div className="text-right md:text-left flex flex-col gap-3">
               <p className="text-sm text-gray-800">
                 <span className="font-medium">Amount:</span> {currency}

@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import { assets } from "../assets/images/assets";
 import RelatedProduct from "../components/RelatedProduct";
@@ -9,7 +9,7 @@ import { FaStar } from "react-icons/fa";
 import axios from "axios";
 const Product = () => {
   const { slug } = useParams();
-  const { products, currency, addToCart, backendUrl, setLoading } =
+  const { products, currency, addToCart, backendUrl } =
     useContext(AppContext);
   const [productData, setProductData] = useState(false);
   const [image, setImage] = useState("");
@@ -23,18 +23,18 @@ const Product = () => {
   const [reviews, setReviews] = useState([]);
 
   const navigate = useNavigate();
-  const fetchProductData = async () => {
+  const fetchProductData = useCallback(async () => {
     const foundProduct = products.find((item) => item.slug === slug);
     if (foundProduct) {
       setProductData(foundProduct);
       setImage(foundProduct.image[0]);
     }
-  };
+  }, [products, slug]);
   const productNavigate = (slug) => {
     navigate(`/product/${slug}`);
   };
 
-  const fetct_color_relation = async (groupIdMain) => {
+  const fetct_color_relation = useCallback(async (groupIdMain) => {
     const groupId = groupIdMain;
     try {
       if (groupId) {
@@ -51,8 +51,10 @@ const Product = () => {
           console.log("No data:", res.data.message);
         }
       }
-    } catch (error) {}
-  };
+    } catch (error) {
+      console.log(error.message)
+    }
+  }, [backendUrl]);
 
   const addReview = async () => {
     try {
@@ -88,7 +90,7 @@ const Product = () => {
       toast.error("Something went wrong while submitting review.");
     }
   };
-  const reviewListByProduct = async () => {
+  const reviewListByProduct = useCallback(async () => {
     if (productData._id) {
       try {
         const response = await axios.get(
@@ -107,26 +109,26 @@ const Product = () => {
         console.error("Error fetching reviews:", error);
       }
     }
-  };
+  }, [backendUrl, productData._id]);
 
   useEffect(() => {
     fetchProductData();
-  }, [slug, products]);
+  }, [slug, products, fetchProductData]);
 
   useEffect(() => {
     if (productData?.productGroupId) {
       fetct_color_relation(productData.productGroupId);
     }
-  }, [productData?.productGroupId]);
+  }, [productData?.productGroupId, fetct_color_relation]);
 
   useEffect(() => {
     if (productData?._id) {
       reviewListByProduct();
     }
-  }, [productData?._id]);
+  }, [productData?._id, reviewListByProduct]);
 
   return productData ? (
-    <div className="border-t pt-10 transition-opacity ease-in duration-500 opacity-100">
+    <div className="border-t pt-10 transition-opacity ease-in duration-500 opacity-100 px-10">
       {/* Product Data */}
       <div className="flex gap-12 sm:gap-12 flex-col sm:flex-row">
         {/* Product Image */}
@@ -137,13 +139,20 @@ const Product = () => {
                 src={item}
                 key={index}
                 onClick={() => setImage(item)}
-                className="w-[24%] sm:w-full sm:mb-3 flex-shrink-0 cursor-pointer"
+                className="w-[24%] sm:w-full sm:mb-3 flex-shrink-0 cursor-pointer border"
               />
             ))}
           </div>
           <div className="w-full sm:w-[80%]">
-            <img className="w-full h-auto" src={image} alt="Main Product" />
+            <div className="w-full aspect-[4/5] bg-white border rounded-lg flex items-center justify-center">
+              <img
+                className="max-h-full max-w-full object-contain"
+                src={image}
+                alt="Main Product"
+              />
+            </div>
           </div>
+
         </div>
         {/* ---------Product Info------------ */}
         <div className="flex-1">
@@ -172,19 +181,19 @@ const Product = () => {
                   const isSelected = selectedSize === item.size;
                   return (
                     item.stock !== 0 ?
-                    <div
-                      key={index}
-                      onClick={() => setSelectedSize(item.size)}
-                      className={`w-24 p- rounded shadow border cursor-pointer hover:shadow-md transition
+                      <div
+                        key={index}
+                        onClick={() => setSelectedSize(item.size)}
+                        className={`w-24 p- rounded shadow border cursor-pointer hover:shadow-md transition
               ${isSelected ? "border-orange-500 bg-orange-50" : "bg-white"}`}
-                    >
-                      <p className="text-sm font-semibold text-center">
-                        {item.size}
-                      </p>
-                      <p className="text-xs text-gray-500 text-center">
-                        Stock: {item.stock}
-                      </p>
-                    </div> : null
+                      >
+                        <p className="text-sm font-semibold text-center">
+                          {item.size}
+                        </p>
+                        <p className="text-xs text-gray-500 text-center">
+                          Stock: {item.stock}
+                        </p>
+                      </div> : null
                   );
                 })}
               </div>
@@ -212,11 +221,10 @@ const Product = () => {
                           productNavigate(item.slug);
                           setActiveProductId(item.productId);
                         }}
-                        className={`w-12 h-12 rounded-full cursor-pointer transition-transform duration-200 hover:scale-105 ${
-                          isSelected
-                            ? "ring-2 ring-orange-500 ring-offset-2"
-                            : "ring-1 ring-gray-300"
-                        }`}
+                        className={`w-12 h-12 rounded-full cursor-pointer transition-transform duration-200 hover:scale-105 ${isSelected
+                          ? "ring-2 ring-orange-500 ring-offset-2"
+                          : "ring-1 ring-gray-300"
+                          }`}
                         style={{ backgroundColor: item.colorHex }}
                         title={item.colorName}
                       ></div>
@@ -330,11 +338,10 @@ const Product = () => {
                   >
                     <FaStar
                       size={30}
-                      className={`transition-colors ${
-                        currentRating <= (hover || rating)
-                          ? "text-yellow-400"
-                          : "text-gray-300"
-                      }`}
+                      className={`transition-colors ${currentRating <= (hover || rating)
+                        ? "text-yellow-400"
+                        : "text-gray-300"
+                        }`}
                     />
                   </button>
                 );
