@@ -49,7 +49,7 @@ import { assets } from "../assets/images/assets.js";
 
 const Hero = () => {
   return (
-    <div className="relative w-full h-[800px] sm:h-[850px] overflow-hidden z-50">
+    <div className="relative w-full h-[800px] sm:h-[850px] overflow-hidden">
       <img
         className="w-full h-full object-cover"
         src={assets.front2}
