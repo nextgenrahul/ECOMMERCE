@@ -6,7 +6,6 @@ import Loader from "../components/Loader";
 export const AppContext = createContext();
 export const AppContextProvider = ({ children }) => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  console.log(backendUrl)
   const [isLoggedin, setIsLoggedin] = useState(false);
   const [userData, setUserData] = useState({});
   const navigate = useNavigate();
