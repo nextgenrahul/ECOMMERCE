@@ -171,7 +171,7 @@ export const AppContextProvider = ({ children }) => {
   useEffect(() => {
     const init = async () => {
       try {
-        console.log("hello")
+        console.log(backendUrl)
         // const res = await axios.get(`${backendUrl}/api/user/auth-check`, {
         //   withCredentials: true
         // });
