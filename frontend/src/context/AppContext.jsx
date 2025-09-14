@@ -172,17 +172,17 @@ export const AppContextProvider = ({ children }) => {
     const init = async () => {
       try {
         console.log(backendUrl)
-        // const res = await axios.get(`${backendUrl}/api/user/auth-check`, {
-        //   withCredentials: true
-        // });
+        const res = await axios.get(`${backendUrl}/api/user/auth-check`, {
+          withCredentials: true
+        });
 
-        // console.log(res)
-        // if (res.data.loggedIn) {
-        //   setIsLoggedin(true);
-        //   setUserName(res.data.user);
-        // } else {
-        //   setIsLoggedin(false);
-        // }
+        console.log(res)
+        if (res.data.loggedIn) {
+          setIsLoggedin(true);
+          setUserName(res.data.user);
+        } else {
+          setIsLoggedin(false);
+        }
       } catch (error) {
         console.log(error.message);
         setIsLoggedin(false);
