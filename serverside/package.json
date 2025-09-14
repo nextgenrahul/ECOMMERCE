@@ -9,7 +9,6 @@
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js"
-
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 const adminAuth = async (req, res, next) => {
   try {
     const authHeader = req.headers["authorization"];
-    console.log(authHeader + "new hear")
     if(!authHeader){
       return res.json({success: false, message: "No token Providedss"});
     }

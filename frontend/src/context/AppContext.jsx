@@ -169,28 +169,27 @@ export const AppContextProvider = ({ children }) => {
   }, [backendUrl]);
 
   useEffect(() => {
-    getProductsData();
     const init = async () => {
       try {
-        const res = await axios.get(backendUrl + "/api/user/auth-check", {
-          withCredentials: true,
+        const res = await axios.get(`${backendUrl}/api/user/auth-check`, {
+          withCredentials: true   // ✅ correct place
         });
 
-        if (res?.data?.loggedIn) {
+        if (res.data.loggedIn) {
           setIsLoggedin(true);
           setUserName(res.data.user);
-          console.log("User is logged in");
         } else {
-          setIsLoggedin(false)
+          setIsLoggedin(false);
         }
-
       } catch (error) {
-        console.log(error.message)
+        console.log(error.message);
+        setIsLoggedin(false);
       }
-
     };
     init();
-  }, [backendUrl, getProductsData]);
+  }, [backendUrl]);
+
+
 
   const getCartAmount = () => {
     let totalAmount = 0;
@@ -223,6 +222,7 @@ export const AppContextProvider = ({ children }) => {
 
   useEffect(() => {
     getCategoryDataAll();
+    getProductsData()
     getUserCart();
   }, [])
   const value = {

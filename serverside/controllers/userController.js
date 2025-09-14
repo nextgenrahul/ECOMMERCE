@@ -226,8 +226,9 @@ const loginUser = async (req, res) => {
     const options = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: "None",  
+      maxAge: 7 * 24 * 60 * 60 * 1000 // ✅ 7 days
     };
-
     const loggedInUser = await userModel.findById(user._id).select(
       "-password -refreshToken -verifyOtp -verifyOtpExpireAt -resetOtp -resetOtpExpireAt"
     );

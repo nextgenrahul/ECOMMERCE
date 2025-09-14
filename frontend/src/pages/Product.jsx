@@ -5,12 +5,12 @@ import { assets } from "../assets/images/assets";
 import RelatedProduct from "../components/RelatedProduct";
 import { toast } from "react-toastify";
 import { FaStar } from "react-icons/fa";
-
 import axios from "axios";
+
 const Product = () => {
   const { slug } = useParams();
-  const { products, currency, addToCart, backendUrl } =
-    useContext(AppContext);
+  const { products, currency, addToCart, backendUrl } = useContext(AppContext);
+
   const [productData, setProductData] = useState(false);
   const [image, setImage] = useState("");
   const [activeProductId, setActiveProductId] = useState(null);
@@ -23,39 +23,45 @@ const Product = () => {
   const [reviews, setReviews] = useState([]);
 
   const navigate = useNavigate();
-  const fetchProductData = useCallback(async () => {
+
+  // Fetch product data
+  const fetchProductData = useCallback(() => {
     const foundProduct = products.find((item) => item.slug === slug);
     if (foundProduct) {
       setProductData(foundProduct);
       setImage(foundProduct.image[0]);
     }
   }, [products, slug]);
+
+  // Navigate to product
   const productNavigate = (slug) => {
     navigate(`/product/${slug}`);
   };
 
-  const fetct_color_relation = useCallback(async (groupIdMain) => {
-    const groupId = groupIdMain;
-    try {
-      if (groupId) {
-        const res = await axios.get(
-          backendUrl + "/api/product/getAllGroupIdData",
-          {
-            params: { groupId },
+  // Fetch color relation
+  const fetct_color_relation = useCallback(
+    async (groupIdMain) => {
+      try {
+        if (groupIdMain) {
+          const res = await axios.get(
+            `${backendUrl}/api/product/getAllGroupIdData`,
+            { params: { groupId: groupIdMain } }
+          );
+
+          if (res.data.success) {
+            setGroupColors(res.data.data);
+          } else {
+            console.log("No data:", res.data.message);
           }
-        );
-
-        if (res.data.success) {
-          setGroupColors(res.data.data);
-        } else {
-          console.log("No data:", res.data.message);
         }
+      } catch (error) {
+        console.log(error.message);
       }
-    } catch (error) {
-      console.log(error.message)
-    }
-  }, [backendUrl]);
+    },
+    [backendUrl]
+  );
 
+  // Add Review
   const addReview = async () => {
     try {
       if (comment && rating) {
@@ -68,9 +74,7 @@ const Product = () => {
         const response = await axios.post(
           `${backendUrl}/api/review/addReview`,
           reviewObj,
-          {
-            withCredentials: true,
-          }
+          { withCredentials: true }
         );
 
         if (response.data.success) {
@@ -90,14 +94,14 @@ const Product = () => {
       toast.error("Something went wrong while submitting review.");
     }
   };
+
+  // Review List
   const reviewListByProduct = useCallback(async () => {
     if (productData._id) {
       try {
         const response = await axios.get(
           `${backendUrl}/api/review/reviewListByProduct`,
-          {
-            params: { productId: productData._id },
-          }
+          { params: { productId: productData._id } }
         );
 
         if (response.data.success) {
@@ -111,6 +115,7 @@ const Product = () => {
     }
   }, [backendUrl, productData._id]);
 
+  // Effects
   useEffect(() => {
     fetchProductData();
   }, [slug, products, fetchProductData]);
@@ -129,34 +134,40 @@ const Product = () => {
 
   return productData ? (
     <div className="border-t pt-10 transition-opacity ease-in duration-500 opacity-100 px-10">
-      {/* Product Data */}
+      {/* Product Section */}
       <div className="flex gap-12 sm:gap-12 flex-col sm:flex-row">
-        {/* Product Image */}
+        {/* Product Images */}
         <div className="flex-1 overflow-hidden flex flex-col-reverse gap-3 sm:flex-row">
-          <div className="flex sm:flex-col overflow-x-auto sm:overflow-y-scroll justify-between sm:justify-normal sm:w-[18.7%] w-full">
+          {/* Thumbnail Images */}
+          <div className="flex sm:flex-col overflow-x-auto sm:overflow-y-auto justify-between sm:justify-normal sm:w-[14%] w-full pr-1">
             {productData.image.map((item, index) => (
               <img
-                src={item}
                 key={index}
+                src={item}
                 onClick={() => setImage(item)}
-                className="w-[24%] sm:w-full sm:mb-3 flex-shrink-0 cursor-pointer border"
+                className={`w-[18%] sm:w-full sm:mb-2 flex-shrink-0 cursor-pointer border rounded-lg object-cover transition-all duration-200 hover:shadow-md hover:border-gray-400 ${image === item ? "border-2 border-orange-500 shadow" : "border border-gray-200"
+                  }`}
+                alt={`Thumbnail ${index + 1}`}
               />
             ))}
           </div>
-          <div className="w-full sm:w-[80%]">
-            <div className="w-full aspect-[4/5] bg-white border rounded-lg flex items-center justify-center">
+
+          {/* Main Image */}
+          <div className="w-full sm:w-[72%]">
+            <div className="w-full aspect-[4/5] bg-white border border-gray-200 rounded-xl shadow-sm flex items-center justify-center overflow-hidden">
               <img
-                className="max-h-full max-w-full object-contain"
                 src={image}
                 alt="Main Product"
+                className="max-h-[92%] max-w-[92%] object-contain"
               />
             </div>
           </div>
-
         </div>
-        {/* ---------Product Info------------ */}
+
+        {/* Product Info */}
         <div className="flex-1">
           <h1 className="font-medium text-2xl mt-2">{productData.name}</h1>
+
           <div className="flex items-center gap-1 mt-2">
             <img className="w-3.5" src={assets.star_icon} alt="" />
             <img className="w-3.5" src={assets.star_icon} alt="" />
@@ -165,50 +176,53 @@ const Product = () => {
             <img className="w-3.5" src={assets.star_dull_icon} alt="" />
             <p className="pl-2">(122)</p>
           </div>
+
           <p className="mt-5 text-3xl font-medium">
             {currency}
             {productData.price}
           </p>
+
           <p className="mt-5 text-gray-500 md:w-4/5">
             {productData.description}
           </p>
+
+          {/* Sizes */}
           {productData.category === "Clothing" && (
             <div className="my-6">
               <p className="text-base font-medium mb-2">Select Size</p>
               <div className="flex flex-wrap gap-3">
                 {productData.sizes?.map((item, index) => {
-                  // const [size, stock] = Object.entries(item)[0];
                   const isSelected = selectedSize === item.size;
-                  return (
-                    item.stock !== 0 ?
-                      <div
-                        key={index}
-                        onClick={() => setSelectedSize(item.size)}
-                        className={`w-24 p- rounded shadow border cursor-pointer hover:shadow-md transition
-              ${isSelected ? "border-orange-500 bg-orange-50" : "bg-white"}`}
-                      >
-                        <p className="text-sm font-semibold text-center">
-                          {item.size}
-                        </p>
-                        <p className="text-xs text-gray-500 text-center">
-                          Stock: {item.stock}
-                        </p>
-                      </div> : null
-                  );
+                  return item.stock !== 0 ? (
+                    <div
+                      key={index}
+                      onClick={() => setSelectedSize(item.size)}
+                      className={`w-24 p-2 rounded shadow border cursor-pointer hover:shadow-md transition ${isSelected
+                        ? "border-orange-500 bg-orange-50"
+                        : "bg-white"
+                        }`}
+                    >
+                      <p className="text-sm font-semibold text-center">
+                        {item.size}
+                      </p>
+                      <p className="text-xs text-gray-500 text-center">
+                        Stock: {item.stock}
+                      </p>
+                    </div>
+                  ) : null;
                 })}
               </div>
             </div>
           )}
 
+          {/* Group Colors */}
           {groupColors && (
             <div className="my-6">
               <h2 className="text-lg font-semibold mb-4 text-gray-800">
                 {groupColors.length === 0 ? "" : "Color Group Products"}
               </h2>
 
-              {groupColors.length === 0 ? (
-                ""
-              ) : (
+              {groupColors.length !== 0 && (
                 <div className="flex flex-wrap gap-4">
                   {groupColors.map((item) => {
                     const isSelected =
@@ -235,6 +249,7 @@ const Product = () => {
             </div>
           )}
 
+          {/* Buttons */}
           <div className="flex flex-wrap gap-3 mt-4">
             <button
               onClick={() => addToCart(productData._id, selectedSize)}
@@ -254,6 +269,7 @@ const Product = () => {
           </div>
 
           <hr className="mt-8 sm:w-4/5" />
+
           <div className="text-sm text-gray-500 mt-5 flex flex-col gap-1">
             <p>100% Original product.</p>
             <p>Cash on delivery is available on this product.</p>
@@ -261,9 +277,10 @@ const Product = () => {
           </div>
         </div>
       </div>
-      {/* ----------- Description & Review Section ----------- */}
+
+      {/* Description & Reviews */}
       <div className="mt-20 flex flex-col md:flex-row gap-6">
-        {/* Description Section */}
+        {/* Description */}
         <div className="w-full md:w-1/2">
           <div className="border-b">
             <p className="px-5 py-3 text-sm font-medium text-gray-700">
@@ -280,6 +297,7 @@ const Product = () => {
           </div>
         </div>
 
+        {/* Reviews */}
         <div className="w-full md:w-1/2">
           <div className="border-b">
             <p className="px-5 py-3 text-sm font-medium text-gray-700">
@@ -309,18 +327,18 @@ const Product = () => {
         </div>
       </div>
 
+      {/* Related Products */}
       <div className="mt-20">
-        {/* Display Related Product */}
         <RelatedProduct
           category={productData.category}
           subCategory={productData.subCategory}
         />
       </div>
 
-      {/* Modal of review section */}
+      {/* Review Modal */}
       {showReviewMd && (
         <div className="fixed inset-0 bg-[#f8f8f698] bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white  w-[90%] max-w-md p-6 rounded-xl shadow-2xl">
+          <div className="bg-white w-[90%] max-w-md p-6 rounded-xl shadow-2xl">
             <h1 className="text-2xl font-bold text-gray-800 mb-4 text-center">
               Leave a Review
             </h1>
@@ -356,7 +374,6 @@ const Product = () => {
               placeholder="Write your thoughts about the product..."
             ></textarea>
 
-            {/* Buttons */}
             <div className="mt-6 flex justify-end gap-3">
               <button
                 onClick={addReview}
@@ -364,7 +381,6 @@ const Product = () => {
               >
                 Submit
               </button>
-
               <button
                 onClick={() => {
                   setShowReviewMd(false);

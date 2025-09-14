@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Siderbar"; // ✅ Fixed spelling (was Siderbar)
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import Add from "./pages/Add";
 import List from "./pages/List";
 import Orders from "./pages/Orders";
@@ -20,8 +20,8 @@ export const backendUrl = import.meta.env.VITE_BACKEND_URL || "";
 export const currency = "$";
 
 const App = () => {
-  const location = useLocation();
-  const [loading, setLoading] = useState(true);
+  // const location = useLocation();
+  // const [loading, setLoading] = useState(false);
   const [token, setToken] = useState("");
 
   // ✅ Check if token is valid on mount
@@ -53,17 +53,17 @@ const App = () => {
     setToken("")
   }, [])
 
-  useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [location.pathname]);
+  // useEffect(() => {
+  //   setLoading(true);
+  //   const timer = setTimeout(() => {
+  //     setLoading(false);
+  //   }, 500);
+  //   return () => clearTimeout(timer);
+  // }, [location.pathname]);
 
-  if (loading) {
-    return <Loader />;
-  }
+  // if (loading) {
+  //   return <Loader />;
+  // }
 
   return (
     <div className="bg-gray-50 min-h-screen">
