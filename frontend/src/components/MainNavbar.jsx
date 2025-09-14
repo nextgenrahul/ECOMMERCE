@@ -37,7 +37,6 @@ const MainNavbar = () => {
   };
 
   return (
-    // Navbar with gradient background and high z-index
     <div className="relative z-50 flex items-center justify-between py-5 font-medium shadow-full 
       bg-gradient-to-t from-[#a4b9d8] to-[#ffffff] px-10">
       <Link to="/">
@@ -57,21 +56,12 @@ const MainNavbar = () => {
             key={path}
             to={path}
             className={({ isActive }) =>
-              `flex flex-col items-center gap-1 transition-colors duration-300 ${
-                isActive
-                  ? "text-[#C19A6B]"
-                  : "text-black hover:text-[#C19A6B]"
-              }`
+              `flex flex-col items-center gap-1 transition-colors duration-300 ${isActive
+                ? "text-[#C19A6B]"
+                : "text-black hover:text-[#C19A6B]"}`
             }
           >
             <p>{label}</p>
-            <span
-              className={`block h-[2px] w-0 bg-[#C19A6B] transition-all duration-300 ${
-                window.location.pathname === path
-                  ? "w-1/2"
-                  : "group-hover:w-1/2"
-              }`}
-            ></span>
           </NavLink>
         ))}
       </ul>
@@ -148,18 +138,14 @@ const MainNavbar = () => {
       {/* Sidebar for Mobile */}
       {visible && (
         <div className="fixed inset-0 z-[9999] flex">
-          {/* Overlay (click to close) */}
+          {/* Overlay */}
           <div
             onClick={() => setVisible(false)}
             className="flex-1 bg-black bg-opacity-50"
           ></div>
 
           {/* Sidebar Menu */}
-          <div
-            className={`w-64 bg-gradient-to-t from-[#1f2937] to-[#4b5563] text-white transition-transform duration-300 transform ${
-              visible ? "translate-x-0" : "translate-x-full"
-            }`}
-          >
+          <div className="w-64 h-full bg-gradient-to-t from-[#1f2937] to-[#4b5563] text-white overflow-y-auto">
             <div
               onClick={() => setVisible(false)}
               className="flex items-center gap-4 p-3 border-b border-gray-500"
@@ -171,34 +157,25 @@ const MainNavbar = () => {
               />
               <p>Close</p>
             </div>
-            <NavLink
-              className="py-2 pl-6 border-b border-gray-400"
-              onClick={() => setVisible(false)}
-              to="/"
-            >
-              Home
-            </NavLink>
-            <NavLink
-              className="py-2 pl-6 border-b border-gray-400"
-              onClick={() => setVisible(false)}
-              to="/collection"
-            >
-              Collection
-            </NavLink>
-            <NavLink
-              className="py-2 pl-6 border-b border-gray-400"
-              onClick={() => setVisible(false)}
-              to="/about"
-            >
-              About
-            </NavLink>
-            <NavLink
-              className="py-2 pl-6 border-b border-gray-400"
-              onClick={() => setVisible(false)}
-              to="/contact"
-            >
-              Contact
-            </NavLink>
+
+            <div className="flex flex-col">
+              {[
+                { path: "/", label: "Home" },
+                { path: "/collection", label: "Collection" },
+                { path: "/about", label: "About" },
+                { path: "/contact", label: "Contact" },
+                { path: "/trackOrder", label: "Track Order" },
+              ].map(({ path, label }) => (
+                <NavLink
+                  key={path}
+                  className="py-3 pl-6 border-b border-gray-600"
+                  onClick={() => setVisible(false)}
+                  to={path}
+                >
+                  {label}
+                </NavLink>
+              ))}
+            </div>
           </div>
         </div>
       )}
