@@ -13,32 +13,30 @@ app.use(express.urlencoded({ extended: true }));
 
 // Middlewares
 app.use(express.json());
-// const whiteList = [
-// "http://localhost:5173",
-// "http://localhost:5174",
-// "http://localhost:5175",
-// "https://ecommerce-frontend-sigma-two-40.vercel.app",
-// "https://ecommerce-admin-three-lovat.vercel.app",
-// "https://ecommerce-gqp2.onrender.com",
-// "https://ecommerce-1-qxo4.onrender.com"
+const whiteList = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:5175",
+  "https://ecommerce-frontend-sigma-two-40.vercel.app",
+  "https://ecommerce-admin-three-lovat.vercel.app"
+  // "https://ecommerce-gqp2.onrender.com",
+  // "https://ecommerce-1-qxo4.onrender.com"
 
-// ];
-// app.use(
-//   cors({
-//     origin: function (origin, callback) {
-//       if (!origin || whiteList.indexOf(origin) !== -1) {
-//         callback(null, true)
-//       } else {
-//         callback(new Error("Not allowed by cors"));
-//       }
-//     },
-//     credentials: true,
-//     allowedHeaders: ["Content-Type", "Authorization", "token"]
-//   })
-// );
-app.use(cors({
-  origin: '*'  
-}));
+];
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || whiteList.indexOf(origin) !== -1) {
+        callback(null, true)
+      } else {
+        callback(new Error("Not allowed by cors"));
+      }
+    },
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization", "token"]
+  })
+);
+
 // API Endpoints
 import userRouter from "./routes/userRoute.js";
 import productRouter from "./routes/productRoute.js";
