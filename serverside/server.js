@@ -19,6 +19,7 @@ const whiteList = [
   "http://localhost:5175",
   "https://ecommerce-frontend-gewv0a1ms-rahuls-projects-2041b8a8.vercel.app",
   "https://ecommerce-admin-iiqx28f8j-rahuls-projects-2041b8a8.vercel.app",
+  "https://ecommerce-frontend-r5qsbato6-rahuls-projects-2041b8a8.vercel.app"
 
 ];
 app.use(
