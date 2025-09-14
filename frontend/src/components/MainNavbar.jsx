@@ -146,53 +146,62 @@ const MainNavbar = () => {
       </div>
 
       {/* Sidebar for Mobile */}
-      <div
-        className={`absolute top-0 right-0 bottom-0 overflow-hidden transition-all z-50 ${
-          visible ? "w-full" : "w-0"
-        } bg-gradient-to-t from-[#1f2937] to-[#4b5563] text-white`}
-      >
-        <div className="flex flex-col cursor-pointer">
+      {visible && (
+        <div className="fixed inset-0 z-[9999] flex">
+          {/* Overlay (click to close) */}
           <div
             onClick={() => setVisible(false)}
-            className="flex items-center gap-4 p-3"
+            className="flex-1 bg-black bg-opacity-50"
+          ></div>
+
+          {/* Sidebar Menu */}
+          <div
+            className={`w-64 bg-gradient-to-t from-[#1f2937] to-[#4b5563] text-white transition-transform duration-300 transform ${
+              visible ? "translate-x-0" : "translate-x-full"
+            }`}
           >
-            <img
-              className="h-4 rotate-180"
-              src={assets.dropdown_icon}
-              alt="Back"
-            />
-            <p>Back</p>
+            <div
+              onClick={() => setVisible(false)}
+              className="flex items-center gap-4 p-3 border-b border-gray-500"
+            >
+              <img
+                className="h-4 rotate-180"
+                src={assets.dropdown_icon}
+                alt="Back"
+              />
+              <p>Close</p>
+            </div>
+            <NavLink
+              className="py-2 pl-6 border-b border-gray-400"
+              onClick={() => setVisible(false)}
+              to="/"
+            >
+              Home
+            </NavLink>
+            <NavLink
+              className="py-2 pl-6 border-b border-gray-400"
+              onClick={() => setVisible(false)}
+              to="/collection"
+            >
+              Collection
+            </NavLink>
+            <NavLink
+              className="py-2 pl-6 border-b border-gray-400"
+              onClick={() => setVisible(false)}
+              to="/about"
+            >
+              About
+            </NavLink>
+            <NavLink
+              className="py-2 pl-6 border-b border-gray-400"
+              onClick={() => setVisible(false)}
+              to="/contact"
+            >
+              Contact
+            </NavLink>
           </div>
-          <NavLink
-            className="py-2 pl-6 border-t border-gray-400"
-            onClick={() => setVisible(false)}
-            to="/"
-          >
-            Home
-          </NavLink>
-          <NavLink
-            className="py-2 pl-6 border-t border-gray-400"
-            onClick={() => setVisible(false)}
-            to="/collection"
-          >
-            Collection
-          </NavLink>
-          <NavLink
-            className="py-2 pl-6 border-t border-gray-400"
-            onClick={() => setVisible(false)}
-            to="/about"
-          >
-            About
-          </NavLink>
-          <NavLink
-            className="py-2 pl-6 border border-gray-400"
-            onClick={() => setVisible(false)}
-            to="/contact"
-          >
-            Contact
-          </NavLink>
         </div>
-      </div>
+      )}
     </div>
   );
 };
