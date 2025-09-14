@@ -16,9 +16,7 @@ app.use(express.json());
 const whiteList = [
   "http://localhost:5173",
   "http://localhost:5174",
-  "http://localhost:5175",
-  "https://ecommerce-frontend-1utqvo4y2-rahuls-projects-2041b8a8.vercel.app",
-  "https://ecommerce-admin-es619ldkk-rahuls-projects-2041b8a8.vercel.app/",
+  "http://localhost:5175"
 
 ];
 app.use(
