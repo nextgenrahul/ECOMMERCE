@@ -83,10 +83,10 @@ export const AppContextProvider = ({ children }) => {
   const updateQuantity = async (itemId, size, quantity, productSizesArr) => {
     const selectedSizeObj = productSizesArr?.find((s) => s.size === size);
 
-    // if (!selectedSizeObj) {
-    //   toast.error("Invalid size selected!");
-    //   return;
-    // }
+    if (!selectedSizeObj) {
+      toast.error("Invalid size selected!");
+      return;
+    }
 
     const stock = selectedSizeObj.stock;
 
