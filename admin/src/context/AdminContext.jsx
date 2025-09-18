@@ -1,12 +1,15 @@
 import axios from "axios";
 import { useEffect, useState, createContext, useCallback } from "react";
 import { toast } from "react-toastify";
+import Loader from "../components/Loader";
+// import { useContext } from "react";
 
 export const AdminContext = createContext();
 
 export const AdminContextProvider = ({ children, token }) => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [categoryAllData, setCategoryAllData] = useState([]);
+  // const [loading, setLoading] = useState(false);
 
   const getCategoryDataAll = useCallback(async () => {
     try {
@@ -34,12 +37,13 @@ export const AdminContextProvider = ({ children, token }) => {
   const value = {
     backendUrl,
     categoryAllData,
-    // setLoading,  // ❌ No need to expose setLoading if loader is hidden
+    // setLoading,
   };
 
   return (
-    <AdminContext.Provider value={value}>
-      {children}
-    </AdminContext.Provider>
+    <>
+      {/* {loading && <Loader />} */}
+      <AdminContext.Provider value={value}>{children}</AdminContext.Provider>
+    </>
   );
 };
