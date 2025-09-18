@@ -30,9 +30,7 @@ export const AppContextProvider = ({ children }) => {
         localStorage.setItem("isLoggedin", "true");
       }
     } catch (error) {
-      toast.error(
-        error?.response?.data?.message || "Failed to fetch user data"
-      );
+      console.log(error?.response?.data?.message || "Failed to fetch user data")
     }
   }, [backendUrl]);
 
