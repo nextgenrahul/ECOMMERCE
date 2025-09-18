@@ -11,7 +11,7 @@ const ColorManager = ({ token }) => {
   const [colorId, setColorId] = useState("");
 
   const getColorList = useCallback(async () => {
-    setLoading(true);
+    // setLoading(true);
     try {
       if (token) {
         const { data } = await axios.get(`${backendUrl}/api/color/list`, {
@@ -29,9 +29,9 @@ const ColorManager = ({ token }) => {
       console.error("Color fetch error:", error);
       toast.error("Server error while fetching colors");
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
-  }, [backendUrl, token, setLoading]);
+  }, [backendUrl, token]);
 
   const handleSubmit = useCallback(async () => {
     if (!color || !colorHex) {

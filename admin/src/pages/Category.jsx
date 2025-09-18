@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 const Category = ({ token }) => {
   const [category, setCategory] = useState("");
   const [categoryData, setCategoryData] = useState([]);
-  const { backendUrl, setLoading } = useContext(AdminContext);
+  const { backendUrl } = useContext(AdminContext);
 
   const capitalizeFirst = (str) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -14,7 +14,7 @@ const Category = ({ token }) => {
 
   const getCategoryData = useCallback(async () => {
     try {
-      setLoading(true);
+      // setLoading(true);
       const response = await axios.get(`${backendUrl}/api/category/list`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -25,9 +25,9 @@ const Category = ({ token }) => {
       console.error(error);
       toast.error("Failed to fetch categories");
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
-  }, [backendUrl, setLoading, token]);
+  }, [backendUrl, token]);
 
   useEffect(() => {
     getCategoryData();
@@ -39,7 +39,7 @@ const Category = ({ token }) => {
       toast.error("Category must be entered");
       return;
     }
-    setLoading(true);
+    // setLoading(true);
     try {
       const payload = { category: capitalizeFirst(category) };
       const response = await axios.post(
@@ -58,7 +58,7 @@ const Category = ({ token }) => {
       console.error("Error while adding category:", error);
       toast.error("Something went wrong!");
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -67,7 +67,7 @@ const Category = ({ token }) => {
       toast.error("Id is required");
       return;
     }
-    setLoading(true);
+    // setLoading(true);
     try {
       const response = await axios.delete(
         `${backendUrl}/api/category/delete/${id}`,
@@ -83,10 +83,9 @@ const Category = ({ token }) => {
       console.error("Error while deleting category:", error);
       toast.error("Something went wrong!");
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
-  }, [backendUrl, setLoading, token]);
-
+  }, [backendUrl, token]);
   return (
     <div className="p-6 bg-white text-black rounded shadow max-w-md mx-auto">
       <h2 className="text-xl font-semibold mb-4">Category Manager</h2>

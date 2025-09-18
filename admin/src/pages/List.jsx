@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { backendUrl, currency } from "../App";
 import { toast } from "react-toastify";
 import { AdminContext } from "../context/AdminContext";
@@ -7,11 +7,11 @@ import { Link } from "react-router-dom";
 
 const List = ({ token }) => {
   const [list, setList] = useState([]);
-  const { setLoading } = useContext(AdminContext);
+  // const { setLoading } = useContext(AdminContext);
 
   const fetchList = useCallback(async () => {
     try {
-      setLoading(true);
+      // setLoading(true);
       const response = await axios.get(backendUrl + "/api/product/list", {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -25,13 +25,13 @@ const List = ({ token }) => {
       console.log(error);
       toast.error("Failed to fetch product list");
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
-  }, [setLoading, token]);
+  }, [ token]);
 
   const removeProduct = async (id) => {
     try {
-      setLoading(true);
+      // setLoading(true);
       const response = await axios.post(
         backendUrl + "/api/product/remove",
         { id },
@@ -48,7 +48,7 @@ const List = ({ token }) => {
       console.log(error);
       toast.error(error.message || "Failed to remove product");
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 

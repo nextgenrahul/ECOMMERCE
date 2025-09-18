@@ -14,7 +14,7 @@ const Orders = ({ token }) => {
     if (!token) return;
 
     try {
-      setLoading(true);
+      // setLoading(true);
       const response = await axios.post(
         `${backendUrl}/api/order/list`,
         {},
@@ -33,7 +33,7 @@ const Orders = ({ token }) => {
     } catch (error) {
       toast.error(error.message);
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
