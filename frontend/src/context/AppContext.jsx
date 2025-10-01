@@ -4,6 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
 export const AppContext = createContext();
+
 export const AppContextProvider = ({ children }) => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [isLoggedin, setIsLoggedin] = useState(false);
@@ -19,7 +20,7 @@ export const AppContextProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [userName, setUserName] = useState({});
 
-  const getUserData = useCallback(async () => {
+  const getUserData = async () => {
     if (!backendUrl) return toast.error("Backend URL is not defined.");
     try {
       axios.defaults.withCredentials = true;
@@ -32,23 +33,18 @@ export const AppContextProvider = ({ children }) => {
     } catch (error) {
       console.log(error?.response?.data?.message || "Failed to fetch user data")
     }
-  }, [backendUrl]);
+  };
 
   const addToCart = async (itemId, size) => {
-    // if (!size) {
-    //   return toast.error("Sizes are requried");
-    // }
     if (!itemId) {
       return toast.error("Item Id are requried");
     }
     let cartData = structuredClone(cartItems);
-
     if (cartData[itemId]) {
       cartData[itemId][size] = (cartData[itemId][size] || 0) + 1;
     } else {
       cartData[itemId] = { [size]: 1 };
     }
-
     setCartItems(cartData);
 
     if (isLoggedin) {
@@ -61,9 +57,8 @@ export const AppContextProvider = ({ children }) => {
       } catch (error) {
         console.log(error);
       }
-    } else {
-      localStorage.setItem("cartData", JSON.stringify(cartData));
     }
+    localStorage.setItem("cartData", JSON.stringify(cartData));
   };
 
   const getCartCount = () => {
@@ -79,41 +74,40 @@ export const AppContextProvider = ({ children }) => {
     return totalCount;
   };
   const updateQuantity = async (itemId, size, quantity, productSizesArr) => {
-    const selectedSizeObj = productSizesArr?.find((s) => s.size === size);
-
-    if (!selectedSizeObj) {
-      toast.error("Invalid size selected!");
-      return;
-    }
-
-    const stock = selectedSizeObj.stock;
-
-    if (quantity > stock) {
-      toast.error(`Only ${stock} items in stock for size ${size}`);
-      return;
-    }
-
     let cartData = structuredClone(cartItems);
 
-    if (!cartData[itemId]) {
-      cartData[itemId] = {};
+    if (size) {
+      const selectedSizeObj = productSizesArr?.find((s) => s.size === size);
+      const stock = selectedSizeObj?.stock ?? Infinity;
+
+      if (quantity > stock) {
+        toast.error(`Only ${stock} items in stock for size ${size}`);
+        return;
+      }
+
+      if (!cartData[itemId]) {
+        cartData[itemId] = {};
+      }
+
+      if (quantity > 0) {
+        cartData[itemId][size] = quantity;
+      } else {
+        delete cartData[itemId][size];
+        if (Object.keys(cartData[itemId]).length === 0) {
+          delete cartData[itemId];
+        }
+      }
     }
-
-    cartData[itemId][size] = quantity;
-
-    if (quantity === 0) {
-      delete cartData[itemId][size];
-      if (Object.keys(cartData[itemId]).length === 0) {
-        localStorage.removeItem("cartData");
-
+    else {
+      if (quantity > 0) {
+        cartData[itemId] = quantity;
+      } else {
         delete cartData[itemId];
       }
     }
 
     setCartItems(cartData);
     localStorage.setItem("cartData", JSON.stringify(cartData));
-
-
     if (isLoggedin) {
       try {
         await axios.post(
@@ -125,10 +119,9 @@ export const AppContextProvider = ({ children }) => {
         console.log(error);
         toast.error(error.message);
       }
-    } else {
-      localStorage.setItem("cartData", JSON.stringify(cartData));
     }
   };
+
 
   const getUserCart = async () => {
     if (isLoggedin) {
@@ -154,7 +147,7 @@ export const AppContextProvider = ({ children }) => {
     }
   };
 
-  const getProductsData = useCallback(async () => {
+  const getProductsData = async () => {
     try {
       const response = await axios.get(backendUrl + "/api/product/list");
       if (response.data.success) {
@@ -164,12 +157,11 @@ export const AppContextProvider = ({ children }) => {
       console.log(error);
       toast.error(error.message);
     }
-  }, [backendUrl]);
+  };
 
   useEffect(() => {
     const init = async () => {
       try {
-        console.log(backendUrl)
         const res = await axios.get(`${backendUrl}/api/user/auth-check`, {
           withCredentials: true
         });
@@ -255,7 +247,7 @@ export const AppContextProvider = ({ children }) => {
   return (
     <>
       {loading && <Loader />}
-      <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+      <AppContext.Provider value={value}>{children}</AppContext.Provider>
     </>
   );
 };

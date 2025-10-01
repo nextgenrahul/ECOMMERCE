@@ -252,7 +252,18 @@ const Product = () => {
           {/* Buttons */}
           <div className="flex flex-wrap gap-3 mt-4">
             <button
-              onClick={() => addToCart(productData._id, selectedSize)}
+              onClick={() => {
+                if (productData.category === "Clothing" && selectedSize) {
+                  if (selectedSize) {
+                    addToCart(productData._id, selectedSize)
+                  } else {
+                    return toast.error("Size is required.")
+                  }
+                } else {
+                  addToCart(productData._id)
+                }
+              }
+              }
               className="bg-black text-white border-2 border-black px-7 py-3 text-sm rounded-md transition-all duration-300 hover:bg-white hover:text-black active:bg-gray-800"
             >
               ADD TO CART

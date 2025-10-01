@@ -64,6 +64,7 @@ const Cart = () => {
             const productData = products.find(
               (product) => product._id === item._id
             );
+            console.log(cartData)
             return (
               <div
                 key={index}
@@ -86,9 +87,12 @@ const Cart = () => {
                         {currency}
                         {productData?.price}
                       </p>
-                      <p className="px-2 sm:px-3 sm:py-1 border border-gray-50 bg-slate-50">
-                        {item.size}
-                      </p>
+                      {
+                        item.size == "undefined" ? "" : <p className="px-2 sm:px-3 sm:py-1 border border-gray-50 bg-slate-50">
+                          {item.size}
+                        </p>
+                      }
+
                     </div>
                   </div>
                 </div>
@@ -109,7 +113,7 @@ const Cart = () => {
                   defaultValue={item.quantity}
                 />
                 <img
-                  onClick={() => updateQuantity(item._id, item.size, 0, productData.sizes )}
+                  onClick={() => updateQuantity(item._id, item.size, 0, productData.sizes)}
                   className="w-4 mr-4 sm:w-5 cursor-pointer"
                   src={assets.bin_icon}
                   alt=""

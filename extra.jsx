@@ -337,3 +337,52 @@
 //                 ? "inset-0 select-none bg-black opacity-30 no rounded pointer-events-none z-10"
 //                 : ""
 //             }
+
+
+
+
+
+
+  const addToCart = async (itemId, size) => {
+    if (!itemId) {
+      return toast.error("Item Id are requried");
+    }
+    let cartData = structuredClone(cartItems);
+    // if (cartData[itemId]) {
+    //   if (cartData[itemId][size]) {
+    //     cartData[itemId][size] = (cartData[itemId][size] || 0) + 1;
+    //   } else {
+    //     cartData[itemId] = (cartData[itemId] || 0) + 1;
+    //   }
+    // } else {
+    //   if (cartData[itemId]) {
+    //     cartData[itemId] = { [size]: 1 };
+    //   } else {
+    //     cartData[itemId] = 1;
+    //   }
+    // }
+
+    if (size) {
+      if (!cartData[itemId]) {
+        cartData[itemId] = {};
+      }
+      cartData[itemId][size] = (cartData[itemId][size] || 0) + 1
+    } else {
+      cartData[itemId] = (cartData[itemId] || 0) + 1;
+    }
+    setCartItems(cartData);
+    localStorage.setItem("cartData", JSON.stringify(cartData));
+
+    if (isLoggedin) {
+      try {
+        await axios.post(
+          backendUrl + "/api/cart/add",
+          { itemId, size },
+          { withCredentials: true }
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    localStorage.setItem("cartData", JSON.stringify(cartData));
+  };
