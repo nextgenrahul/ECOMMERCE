@@ -5,26 +5,52 @@ import { Link } from "react-router-dom";
 const ProductItem = ({ id, slug, image, name, price }) => {
   const { currency } = useContext(AppContext);
 
+  // Safely grab the first asset in the array, fallback gracefully if empty
+  const primaryImage = image && image.length > 0 ? image[0] : "";
+
   return (
     <Link
       to={`/product/${slug}`}
-      className="block rounded-2xl border border-gray-200 hover:border-gray-300 shadow-2xl hover:shadow-md transition-all duration-300 bg-white group cursor-pointer"
+      className="block bg-white text-black group cursor-pointer border border-transparent hover:border-neutral-100 p-2 transition-all duration-300"
     >
-      <div className="aspect-[4/5] overflow-hidden rounded-t-2xl">
-        <img
-          className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500 ease-in-out"
-          src={image[0]}
-          alt={name}
-        />
+      {/* High-Density Editorial Aspect Frame */}
+      <div className="aspect-[3/4] overflow-hidden bg-neutral-50 relative">
+        {primaryImage ? (
+          <img
+            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            src={primaryImage}
+            alt={name}
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-neutral-100 text-[10px] font-bold tracking-widest text-neutral-400">
+            NO ASSET
+          </div>
+        )}
+
+        {/* Premium Inverted Hover Overlay Shield */}
+        <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        
+        {/* Quick View Tag Indicator */}
+        <span className="absolute bottom-3 left-3 bg-white text-black text-[9px] font-black tracking-widest uppercase px-2 py-1 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-1 group-hover:translate-y-0">
+          VIEW ITEM ❯
+        </span>
       </div>
 
-      <div className="p-4">
-        <p className="text-gray-800 font-medium text-sm truncate group-hover:text-gray-900">
+      {/* Meta Information Matrix */}
+      <div className="pt-4 pb-2 space-y-1.5 text-left">
+        <h4 className="text-xs font-bold tracking-wide text-neutral-800 truncate uppercase group-hover:text-black transition-colors">
           {name}
-        </p>
-        <p className="text-gray-600 text-sm font-semibold mt-1">
-          {currency} {price}
-        </p>
+        </h4>
+        
+        <div className="flex items-center justify-between text-xs">
+          <p className="font-black text-black tracking-tight">
+            {currency} {Number(price).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+          </p>
+          <span className="text-[9px] font-black tracking-widest text-neutral-300 uppercase group-hover:text-neutral-400 transition-colors">
+            CRU.01
+          </span>
+        </div>
       </div>
     </Link>
   );
