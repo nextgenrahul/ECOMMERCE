@@ -1,39 +1,75 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { assets } from "../assets/images/assets.js";
 
 const Hero = () => {
+  const navigate = useNavigate();
+
   return (
-    <div className="relative w-full h-[800px] sm:h-[850px] overflow-hidden">
-      <img
-        className="w-full h-full object-cover"
-        src={assets.front2}
-        alt="Hero"
-      />
+    <section className="w-full bg-white px-6 md:px-12 max-w-[1600px] mx-auto py-4">
+      {/* Premium Editorial Layout Frame */}
+      <div className="relative w-full h-[70vh] md:h-[80vh] bg-neutral-100 overflow-hidden group">
+        
+        {/* Full-Frame Hero Asset */}
+        <img
+          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          src={assets.front2}
+          alt="Studio Curation Banner"
+        />
 
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"></div>
+        {/* Minimal High-Contrast Overlay Mask */}
+        <div className="absolute inset-0 bg-neutral-950/20 mix-blend-multiply transition-opacity duration-300 group-hover:opacity-30" />
 
-      <div className="absolute bottom-0 left-0 w-full h-28 
-                      bg-gradient-to-t from-white via-white/80 to-transparent">
-      </div>
+        {/* Floating Asymmetric Layout Interface */}
+        <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-16 text-white z-10">
+          <div className="max-w-xl space-y-6">
+            
+            {/* Context Line Tag */}
+            <div className="flex items-center gap-3">
+              <span className="h-[1px] w-8 bg-white" />
+              <span className="text-[10px] font-black tracking-[0.3em] uppercase">
+                Collection Edition // 01
+              </span>
+            </div>
 
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-6 sm:px-12">
-        <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight drop-shadow-lg">
-          Discover Your Style
-        </h1>
-        <p className="mt-3 text-base sm:text-lg text-gray-200 max-w-2xl">
-          Shop the latest trends in fashion with comfort, quality, and elegance.
-          Your perfect look starts here.
-        </p>
-        <div className="mt-6 flex gap-4">
-          <button className="px-6 py-3 bg-[#C19A6B] text-white font-medium rounded-2xl shadow-lg hover:bg-[#a87f52] transition-all duration-300">
-            Shop Now
-          </button>
-          <button className="px-6 py-3 bg-white text-gray-900 font-medium rounded-2xl shadow-lg hover:bg-gray-100 transition-all duration-300">
-            Explore Collection
-          </button>
+            {/* Heavy Monolithic Heading */}
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tighter uppercase leading-[0.9] text-white">
+              UNCOMPROMISED <br />
+              GARMENTS.
+            </h1>
+
+            {/* Sub-text context mapping */}
+            <p className="text-xs sm:text-sm tracking-wide leading-relaxed text-neutral-200 font-medium max-w-md">
+              A precise balancing execution of timeless silhouettes and sharp construction. Intentionally built to endure.
+            </p>
+
+            {/* Flat Solid Control Triggers */}
+            <div className="pt-2 flex flex-wrap gap-4">
+              <button 
+                onClick={() => navigate("/collection")}
+                className="px-8 py-3 bg-white text-black text-xs font-black tracking-widest uppercase transition-all duration-300 hover:bg-black hover:text-white border border-white"
+              >
+                SHOP COLLECTION
+              </button>
+              
+              <button 
+                onClick={() => navigate("/about")}
+                className="px-8 py-3 bg-transparent text-white text-xs font-black tracking-widest uppercase transition-all duration-300 hover:bg-white hover:text-black border border-white"
+              >
+                THE JOURNAL
+              </button>
+            </div>
+
+          </div>
         </div>
+
+        {/* Technical Layout Accent */}
+        <div className="absolute top-8 right-8 text-[10px] font-black tracking-widest text-white/40 uppercase hidden sm:block">
+          SYS.MAT // CRU-01
+        </div>
+
       </div>
-    </div>
+    </section>
   );
 };
   
