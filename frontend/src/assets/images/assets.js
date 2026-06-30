@@ -84,7 +84,9 @@ import logo_icon from "./logo_icon.svg";
 import hero_i from "./her.jpg";
 import cartoon from "./cartoon3ed.jpg";
 import front2 from "./front2.jpg"
+import banner from "./banner.png"
 export const assets = {
+    banner,
     front2,
     cartoon,
     logoIcon,

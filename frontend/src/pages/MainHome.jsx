@@ -7,6 +7,7 @@ import LatestCollection from "../components/LatestCollection";
 import BestSeller from "../components/BestSeller";
 
 const MainHome = () => {
+  
   return (
     <div>
       <Hero />

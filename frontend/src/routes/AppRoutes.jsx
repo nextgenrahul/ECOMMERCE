@@ -24,6 +24,7 @@ import Login from "../pages/Login";
 // import { useEffect } from "react";
 // import { useContext } from "react";
 import { AppContext } from "../context/AppContext";
+import Image from "../pages/Image";
 
 const AppRoutes = () => {
 
@@ -39,6 +40,8 @@ const AppRoutes = () => {
   // }, [location.pathname]);
 
 
+
+  
   return (
     <div className="overflow-hidden">
       <MainNavbar />
@@ -47,6 +50,7 @@ const AppRoutes = () => {
         <SearchBar />
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/image" element={<Image />} />
           <Route path="/" element={<MainHome />} />
           <Route path="/collection" element={<Collection />} />
           <Route path="/contact" element={<Contact />} />
