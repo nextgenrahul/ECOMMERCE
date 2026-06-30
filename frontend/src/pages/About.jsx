@@ -5,84 +5,99 @@ import NewsLetterBox from "../components/NewsLetterBox";
 
 const About = () => {
   return (
-    <div className=" px-10">
-      {/* Section Title */}
-      <div className="text-2xl text-center pt-8 border-t">
-        <Title text1="ABOUT" text2="US" />
-      </div>
-
-      {/* About Image Section */}
-      <div className="my-10 flex flex-col md:flex-row gap-16">
-        <img
-          className="w-full md:max-w-[450px] "
-          src={assets.about_img}
-          alt="About Us"
-        />
-        <div className="flex flex-col justify-center gap-6 md:w-2/4 text-gray-600">
-          <p>
-            Forever was born out of a passion for innovation and a desire to
-            revolutionize the way people shop online. Our journey began with a
-            simple idea: to provide a platform where customers can easily
-            discover, explore, and purchase a wide range of products from the
-            comfort of their homes.
-          </p>
-          <p>
-            Since our inception, we've worked tirelessly to curate a diverse
-            selection of high-quality products that cater to every taste and
-            preference. From fashion and beauty to electronics and home
-            essentials, we offer an extensive collection sourced from trusted
-            brands and suppliers.
-          </p>
-          <b className="text-gray-800">Our Mission</b>
-          <p>
-            Our mission is to empower every individual with access to quality
-            products through a seamless and enjoyable shopping experience. We
-            are committed to delivering exceptional value, promoting innovation,
-            and continuously enhancing our platform to meet the evolving needs
-            of our customers. At the heart of our mission lies a dedication to
-            customer satisfaction, ethical practices, and a relentless pursuit
-            of excellence in everything we do.
-          </p>
-        </div>
-      </div>
-      <div className="text-xl py-4">
-        <Title text1={"WHY"} text2={"CHOOSE US"} />
-      </div>
-      <div className="flex flex-col md:flex-row text-sm mb-20">
-        {/* Quality Assurance */}
-        <div className="border bd-g px-10 md:px-16 py-8 sm:py-20 flex flex-col gap-5">
-          <b>Quality Assurance :</b>
-          <p className="text-gray-600">
-            We are dedicated to offering only the finest products, rigorously
-            tested and sourced from trusted suppliers. Our quality assurance
-            process ensures that every item meets high standards of durability,
-            reliability, and customer satisfaction.
-          </p>
+    <div className="bg-white text-black min-h-screen">
+      <div className="px-6 md:px-12 max-w-[1600px] mx-auto pt-10">
+        
+        {/* Section Title */}
+        <div className="border-t border-neutral-100 pt-8">
+          <Title text1="MANIFESTO" text2="STUDIO" />
         </div>
 
-        {/* Convenience */}
-        <div className="border bd-g px-10 md:px-16 py-8 sm:py-20 flex flex-col gap-5">
-          <b>Convenience :</b>
-          <p className="text-gray-600">
-            From effortless browsing to fast and secure checkout, our platform
-            is designed for a smooth shopping experience. With easy navigation,
-            personalized recommendations, and prompt delivery, we make shopping
-            simple and stress-free.
-          </p>
+        {/* Studio Origins Image Section */}
+        <div className="my-16 grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-16 items-start">
+          
+          {/* Asymmetric Left Hero Image Frame */}
+          <div className="lg:col-span-2 bg-neutral-50 border border-neutral-100 p-2 group">
+            <div className="aspect-[3/4] overflow-hidden bg-neutral-100">
+              <img
+                className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 filter grayscale contrast-110"
+                src={assets.about_img}
+                alt="Studio Presentation"
+              />
+            </div>
+          </div>
+          
+          {/* Editorial Narrative Column */}
+          <div className="lg:col-span-3 flex flex-col justify-center gap-8 text-xs font-medium tracking-wide leading-relaxed text-neutral-500">
+            <div className="space-y-4">
+              <span className="text-[9px] font-black tracking-[0.3em] text-neutral-400 uppercase block">
+                01 // ORIGINS
+              </span>
+              <p className="text-black font-semibold text-sm leading-relaxed normal-case">
+                ESSENTIAL was engineered out of a definitive architectural perspective: to strip digital commerce down to its most pure, uncompromised state. 
+              </p>
+              <p>
+                We operate outside the traditional fast-fashion cycle. Our framework focuses entirely on clean minimalist construction, meticulous manufacturing loops, and premium materials designed to permanently endure.
+              </p>
+            </div>
+
+            <div className="space-y-4 pt-4 border-t border-neutral-100">
+              <span className="text-[9px] font-black tracking-[0.3em] text-black uppercase block">
+                02 // THE NEURAL LAYER
+              </span>
+              <p>
+                By integrating specialized machine learning protocols directly into our search filters, we allow you to bypass basic keyword configurations entirely. Describe an overall mood, structural fit, or aesthetic vibe, and let our semantic matrix curate your daily lineup instantly.
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* Exceptional Customer Service */}
-        <div className="border bd-g px-10 md:px-16 py-8 sm:py-20 flex flex-col gap-5">
-          <b>Exceptional Customer Service :</b>
-          <p className="text-gray-600">
-            We believe in putting our customers first. Our dedicated support
-            team is available to assist with any inquiries, ensuring that every
-            interaction is helpful, friendly, and resolves your needs promptly
-            and professionally.
-          </p>
+        {/* Structural Capabilities Layout */}
+        <div className="mt-28 mb-12">
+          <Title text1="CORE" text2="CAPABILITIES" />
+        </div>
+        
+        {/* Triple Column Blueprint Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 border border-black text-xs mb-32 divide-y md:divide-y-0 md:divide-x divide-black">
+          
+          {/* Value 01 */}
+          <div className="px-8 py-12 md:py-16 flex flex-col gap-4 bg-white hover:bg-neutral-50 transition-colors group">
+            <div className="flex items-center justify-between">
+              <span className="font-black tracking-widest uppercase text-black">QUALITY PROOF</span>
+              <span className="text-[9px] font-black text-neutral-300 tracking-widest group-hover:text-black transition-colors">[MTRX-A]</span>
+            </div>
+            <p className="tracking-wide leading-relaxed text-neutral-500 font-medium">
+              Every garment profile is subjected to intense structural evaluation metrics. We source exclusively from premium micro-mills to guarantee immaculate fabric density and weave integrity.
+            </p>
+          </div>
+
+          {/* Value 02 */}
+          <div className="px-8 py-12 md:py-16 flex flex-col gap-4 bg-white hover:bg-neutral-50 transition-colors group">
+            <div className="flex items-center justify-between">
+              <span className="font-black tracking-widest uppercase text-black">FLUID LOGISTICS</span>
+              <span className="text-[9px] font-black text-neutral-300 tracking-widest group-hover:text-black transition-colors">[MTRX-B]</span>
+            </div>
+            <p className="tracking-wide leading-relaxed text-neutral-500 font-medium">
+              From automated cart calculation checkouts to dynamic route fleet sorting systems, our fulfillment engine is optimized for absolute friction-free delivery processing.
+            </p>
+          </div>
+
+          {/* Value 03 */}
+          <div className="px-8 py-12 md:py-16 flex flex-col gap-4 bg-white hover:bg-neutral-50 transition-colors group">
+            <div className="flex items-center justify-between">
+              <span className="font-black tracking-widest uppercase text-black">AI CONCIERGE</span>
+              <span className="text-[9px] font-black text-neutral-300 tracking-widest group-hover:text-black transition-colors">[MTRX-C]</span>
+            </div>
+            <p className="tracking-wide leading-relaxed text-neutral-500 font-medium">
+              Eliminate standard customer support response delays. Our embedded catalog intelligence matrix handles real-time data tracking queries and order adjustments instantly.
+            </p>
+          </div>
+          
         </div>
       </div>
-      <NewsLetterBox  />
+
+      {/* Embedded Newsletter Footer Component */}
+      <NewsLetterBox />
     </div>
   );
 };
