@@ -86,7 +86,7 @@ const ResetPassword = () => {
       data.success ? toast.success(data.message) : toast.error(data.message);
       data.success && navigate("/login");
     } catch (error) {
-      toast.error(data.message);
+      toast.error(error.message);
     }
   };
 
