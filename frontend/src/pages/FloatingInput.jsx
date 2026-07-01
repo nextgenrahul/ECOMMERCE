@@ -1,5 +1,5 @@
-import React, { useContext, useRef, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useContext, useRef, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { assets } from "../assets/images/assets.js";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -7,14 +7,20 @@ import { AppContext } from "../context/AppContext";
 
 const ResetPassword = () => {
   const { backendUrl } = useContext(AppContext);
-  axios.defaults.withCredentials = true;
   const navigate = useNavigate();
+  
   const [email, setEmail] = useState("");
-  const inputsRef = useRef([]);
   const [newPassword, setNewPassword] = useState("");
-  const [isEmailSent, setIsEmailSent] = useState("");
-  const [otp, setOtp] = useState(0);
+  const [isEmailSent, setIsEmailSent] = useState(false);
+  const [otp, setOtp] = useState("");
   const [isOtpSubmit, setIsOtpSubmit] = useState(false);
+  
+  const inputsRef = useRef([]);
+
+  // Ensure axios credentials stay local to hook instance mountings
+  useEffect(() => {
+    axios.defaults.withCredentials = true;
+  }, []);
 
   const handleChange = (e, index) => {
     const value = e.target.value;
@@ -34,7 +40,7 @@ const ResetPassword = () => {
   const handlePaste = (e) => {
     e.preventDefault();
     const pasted = e.clipboardData.getData("text").trim();
-    if (pasted.length === 6 && !isNaN(pasted)) {
+    if (/^\d{6}$/.test(pasted)) {
       [...pasted].forEach((char, i) => {
         if (inputsRef.current[i]) {
           inputsRef.current[i].value = char;
@@ -47,104 +53,98 @@ const ResetPassword = () => {
   const onSubmitEmail = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post(
-        `${backendUrl}/api/auth/send-reset-otp`,
-        { email }
-      );
-
+      const { data } = await axios.post(`${backendUrl}/api/auth/send-reset-otp`, { email });
       if (data.success) {
-        toast.success(data.message);
+        toast.success(data.message || "OTP transmitted successfully");
         setIsEmailSent(true);
       } else {
-        toast.error(data.message || "Failed to send OTP");
+        toast.error(data.message || "Failed to transmit secure key");
       }
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || error.message || "Something went wrong"
-      );
+      toast.error(error.response?.data?.message || "Authentication gateway exception");
     }
   };
 
-  const onSubmitOtp = async (e) => {
+  const onSubmitOtp = (e) => {
     e.preventDefault();
-    const otpArray = inputsRef.current.map((e) => e.value);
-    setOtp(otpArray.join(""));
+    const otpString = inputsRef.current.map((el) => el?.value || "").join("");
+    if (otpString.length !== 6) {
+      toast.error("Security code must be exactly 6 digits");
+      return;
+    }
+    setOtp(otpString); // Captured safely before layout swap toggles
     setIsOtpSubmit(true);
   };
 
   const onSubmitNewPassword = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post(
-        backendUrl + "/api/auth/reset-password",
-        { email, otp, newPassword }
-      );
-      data.success ? toast.success(data.message) : toast.error(data.message);
-      data.success && navigate("/login");
+      const { data } = await axios.post(`${backendUrl}/api/auth/reset-password`, { 
+        email, 
+        otp, 
+        newPassword 
+      });
+      if (data.success) {
+        toast.success(data.message || "Security configuration updated");
+        navigate("/login");
+      } else {
+        toast.error(data.message || "Failed to update security credentials");
+      }
     } catch (error) {
-      toast.error(data.message);
+      toast.error(error.response?.data?.message || "Password modification terminal error");
     }
   };
   
   return (
-    <>
-      <div className="w-full">
-        {/* <Link to="/">
-          <img src={assets.logoIcon} alt="" />
-        </Link> */}
-      </div>
-      <div className="bg-white text-black flex justify-center items-center px-4">
-        {!isEmailSent && (
-          <form
-            onSubmit={onSubmitEmail}
-            className="w-full max-w-sm border border-black rounded-lg p-6 shadow-md"
-          >
-            <h1 className="text-2xl font-semibold mb-2 text-center">
-              Reset Password
-            </h1>
-            <p className="text-sm text-center mb-4">
-              Enter your registered email address
-            </p>
+    <section className="min-h-[85vh] flex items-center justify-between px-6 md:px-12 max-w-[1600px] mx-auto bg-white text-black relative overflow-hidden">
+      
+      {/* Left Column: Multi-Stage Workflow Canvas */}
+      <div className="w-full max-w-sm flex flex-col items-start text-left space-y-8 z-10 py-12">
+        
+        {/* Brand System Anchor */}
+        <div onClick={() => navigate("/")} className="cursor-pointer tracking-[0.2em] group">
+          <span className="font-black text-sm uppercase transition-opacity group-hover:opacity-60">
+            ESSENTIAL // RECOVERY
+          </span>
+        </div>
 
-            <div className="flex items-center border border-gray-300 rounded px-3 py-2 mb-4">
-              <img
-                src={assets.main_icon}
-                alt="mail icon"
-                className="w-5 h-5 mr-2"
-              />
+        {/* STAGE 01: Capture Node Email */}
+        {!isEmailSent && (
+          <form onSubmit={onSubmitEmail} className="w-full space-y-6 animate-fade-in">
+            <div className="space-y-2">
+              <span className="text-[9px] font-black tracking-[0.35em] text-neutral-400 uppercase block">STAGE_01 // IDENTITY</span>
+              <h1 className="text-3xl font-black tracking-tighter uppercase leading-none">RESET PASSWORD</h1>
+              <p className="text-xs tracking-wide leading-relaxed text-neutral-500 font-medium">Enter your registered email address to request a single-use matrix recovery token.</p>
+            </div>
+
+            <div className="flex items-center border-2 border-black bg-neutral-50 focus-within:bg-white transition-all px-4 py-3">
+              <img src={assets.main_icon} alt="mail" className="w-4 h-4 mr-3 opacity-60 filter brightness-0" />
               <input
                 type="email"
-                placeholder="Email Id"
+                placeholder="ENTER REGISTERED EMAIL NODE..."
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full outline-none text-black"
+                className="w-full bg-transparent outline-none text-xs font-semibold tracking-wider placeholder-neutral-400 uppercase"
                 required
               />
             </div>
 
-            <button
-              type="submit"
-              className="w-full bg-black text-white py-2 rounded hover:bg-gray-900 transition-all"
-            >
-              Send Reset Link
+            <button type="submit" className="w-full bg-black text-white text-[10px] font-black tracking-widest py-4 border border-black transition-all hover:bg-white hover:text-black uppercase">
+              TRANSMIT OTP TOKEN
             </button>
           </form>
         )}
-        {/*  Otp Input Form */}
 
+        {/* STAGE 02: Verification Code Matching */}
         {!isOtpSubmit && isEmailSent && (
-          <form
-            onSubmit={onSubmitOtp}
-            className="w-full max-w-sm border border-black rounded-lg p-6 shadow-md"
-          >
-            <h1 className="text-2xl font-semibold mb-2 text-center">
-              Reset Password Otp
-            </h1>
-            <p className="text-sm text-center mb-4">
-              Enter the 6-digit OTP sent to your registered email address
-            </p>
+          <form onSubmit={onSubmitOtp} className="w-full space-y-6 animate-fade-in">
+            <div className="space-y-2">
+              <span className="text-[9px] font-black tracking-[0.35em] text-neutral-400 uppercase block">STAGE_02 // AUTHENTICATE</span>
+              <h1 className="text-3xl font-black tracking-tighter uppercase leading-none">ENTER SECURITY CODE</h1>
+              <p className="text-xs tracking-wide leading-relaxed text-neutral-500 font-medium">Type the 6-digit access code dispatched to your profile coordinates.</p>
+            </div>
 
-            <div className="flex gap-2 justify-center mb-4">
+            <div className="flex gap-2.5 justify-between">
               {Array(6)
                 .fill(0)
                 .map((_, index) => (
@@ -157,58 +157,59 @@ const ResetPassword = () => {
                     onChange={(e) => handleChange(e, index)}
                     onKeyDown={(e) => handleKeyDown(e, index)}
                     onPaste={handlePaste}
-                    className="w-12 h-12 border border-black text-black text-center text-xl rounded focus:outline-none"
+                    className="w-full aspect-square border-2 border-neutral-200 text-black text-center text-lg font-black bg-neutral-50 focus:bg-white focus:border-black focus:outline-none transition-all rounded-none uppercase"
                   />
                 ))}
             </div>
 
-            <button
-              type="submit"
-              className="w-full bg-black text-white py-2 rounded hover:bg-gray-900 transition-all"
-            >
-              Submit
+            <button type="submit" className="w-full bg-black text-white text-[10px] font-black tracking-widest py-4 border border-black transition-all hover:bg-white hover:text-black uppercase">
+              VERIFY MATRIX CODE
             </button>
           </form>
         )}
 
-        {/* Enter New Password */}
+        {/* STAGE 03: Establish New Credentials */}
         {isOtpSubmit && isEmailSent && (
-          <form
-          onSubmit={onSubmitNewPassword}
-          className="w-full max-w-sm border border-black rounded-lg p-6 shadow-md">
-            <h1 className="text-2xl font-semibold mb-2 text-center">
-              New Password
-            </h1>
-            <p className="text-sm text-center mb-4">
-              Enter the new Password Below
-            </p>
+          <form onSubmit={onSubmitNewPassword} className="w-full space-y-6 animate-fade-in">
+            <div className="space-y-2">
+              <span className="text-[9px] font-black tracking-[0.35em] text-neutral-400 uppercase block">STAGE_03 // RECONFIGURATION</span>
+              <h1 className="text-3xl font-black tracking-tighter uppercase leading-none">NEW CREDENTIALS</h1>
+              <p className="text-xs tracking-wide leading-relaxed text-neutral-500 font-medium">Define a secure pass phrase configuration to re-verify your catalog session lock.</p>
+            </div>
 
-            <div className="flex items-center border border-gray-300 rounded px-3 py-2 mb-4">
-              <img
-                src={assets.lock_icon}
-                alt="mail icon"
-                className="w-5 h-5 mr-2"
-              />
+            <div className="flex items-center border-2 border-black bg-neutral-50 focus-within:bg-white transition-all px-4 py-3">
+              <img src={assets.lock_icon} alt="lock" className="w-4 h-4 mr-3 opacity-60 filter brightness-0" />
               <input
                 type="password"
-                placeholder="Password"
+                placeholder="ENTER SECURE PASSWORD..."
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full outline-none text-black"
+                className="w-full bg-transparent outline-none text-xs font-semibold tracking-wider placeholder-neutral-400 uppercase"
                 required
               />
             </div>
 
-            <button
-              type="submit"
-              className="w-full bg-black text-white py-2 rounded hover:bg-gray-900 transition-all"
-            >
-              Submit
+            <button type="submit" className="w-full bg-black text-white text-[10px] font-black tracking-widest py-4 border border-black transition-all hover:bg-white hover:text-black uppercase">
+              FINALIZE MODIFICATION
             </button>
           </form>
         )}
+
+        {/* Technical Ticker */}
+        <div className="flex items-center gap-2 text-[9px] font-bold tracking-widest text-neutral-400 uppercase pt-2">
+          <span className="h-1 w-1 bg-neutral-300 rounded-full animate-pulse" />
+          <span>Secured Session Matrix Verification</span>
+        </div>
       </div>
-    </>
+
+      {/* Right Column: Abstract Background Blueprint Layer */}
+      <div className="hidden lg:flex flex-col items-end justify-center w-1/3 h-full select-none pointer-events-none opacity-[0.02]">
+        <span className="text-[20vw] font-black tracking-tighter text-black select-none leading-none">
+          KEY
+        </span>
+      </div>
+
+    </section>
   );
 };
 
