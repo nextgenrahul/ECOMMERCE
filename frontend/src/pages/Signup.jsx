@@ -9,72 +9,110 @@ const Signup = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Signup attempt with:', { name, email, password });
+    console.log('Signup registration signature:', { name, email, password });
+    
+    // In production, this anchors into your axios submission payload:
+    // const { data } = await axios.post(`${backendUrl}/api/user/register`, { name, email, password });
+    
     navigate('/login');
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#f8f8f8' }}>
-      <div className="bg-white-10 p-8 rounded-lg shadow-md w-full max-w-md border-2 border-black">
-        <h2 className="text-2xl font-bold mb-6 text-center text-black">Sign Up</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-black mb-2" htmlFor="name">
-              Full Name 
+    <section className="min-h-[85vh] flex items-center justify-center px-6 md:px-12 max-w-[1600px] mx-auto bg-white text-black">
+      
+      {/* Central Asymmetric Execution Box */}
+      <div className="w-full max-w-md border-2 border-black p-6 md:p-8 bg-white relative rounded-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        
+        {/* Form Identity Matrix Header */}
+        <div className="mb-6 space-y-1 text-left">
+          <span className="text-[9px] font-black tracking-[0.35em] text-neutral-400 uppercase block">
+            REGISTRATION GATEWAY
+          </span>
+          <h2 className="text-2xl font-black tracking-widest uppercase text-black">
+            CREATE ACCOUNT //
+          </h2>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          
+          {/* Input Unit: Full Name */}
+          <div className="space-y-1.5 text-left">
+            <label className="text-[10px] font-black tracking-widest uppercase text-black" htmlFor="name">
+              FULL NAME IDENTITY
             </label>
             <input
               type="text"
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder='Enter Your FullName'
-              className="w-full px-3 py-2 border-2 border-black rounded focus:outline-none"
+              placeholder="ENTER REGISTERED NAME..."
+              className="w-full border-2 border-black bg-neutral-50 px-4 py-3 text-xs font-semibold tracking-wider text-black placeholder-neutral-400 outline-none focus:bg-white uppercase rounded-none"
               required
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-black mb-2" htmlFor="email">
-              Email
+
+          {/* Input Unit: Email Coordinates */}
+          <div className="space-y-1.5 text-left">
+            <label className="text-[10px] font-black tracking-widest uppercase text-black" htmlFor="email">
+              EMAIL COORDINATES
             </label>
             <input
               type="email"
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder='Enter Your Email'
-              className="w-full px-3 py-2 border-2 border-black rounded focus:outline-none"
+              placeholder="ENTER UNIQUE EMAIL NODE..."
+              className="w-full border-2 border-black bg-neutral-50 px-4 py-3 text-xs font-semibold tracking-wider text-black placeholder-neutral-400 outline-none focus:bg-white uppercase rounded-none"
               required
             />
           </div>
-          <div className="mb-6">
-            <label className="block text-black mb-2" htmlFor="password">
-              Password
+
+          {/* Input Unit: Access Cipher */}
+          <div className="space-y-1.5 text-left">
+            <label className="text-[10px] font-black tracking-widest uppercase text-black" htmlFor="password">
+              SECURE PASS CIPHER
             </label>
             <input
               type="password"
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder='Enter Your Password'
-              className="w-full px-3 py-2 border-2 border-black rounded focus:outline-none"
+              placeholder="DEFINE SESSION PASSWORD..."
+              className="w-full border-2 border-black bg-neutral-50 px-4 py-3 text-xs font-semibold tracking-wider text-black placeholder-neutral-400 outline-none focus:bg-white uppercase rounded-none"
               required
             />
           </div>
-          <button
-            type="submit"
-            className="w-full bg-black text-white py-2 rounded hover:opacity-90 transition"
-          >
-            Sign Up
-          </button>
+
+          {/* Action Trigger Operators */}
+          <div className="pt-2">
+            <button
+              type="submit"
+              className="w-full bg-black text-white text-[10px] font-black tracking-widest py-4 border border-black transition-all hover:bg-white hover:text-black uppercase rounded-none"
+            >
+              INITIALIZE REGISTRATION
+            </button>
+          </div>
+
         </form>
-        <p className="mt-4 text-center text-black">
-          Already have an account?{' '}
-          <Link to="/login" className="font-bold hover:underline">
-            Login
-          </Link>
-        </p>
+
+        {/* Cross-Route Redirection Link */}
+        <div className="mt-6 pt-4 border-t border-neutral-100 text-center">
+          <p className="text-[11px] font-medium tracking-wide text-neutral-500 uppercase">
+            ALREADY HOLD AN ACTIVE IDENTIFIER?{" "}
+            <Link to="/login" className="font-black text-black underline underline-offset-2 hover:opacity-60 transition-opacity">
+              LOGIN NODE
+            </Link>
+          </p>
+        </div>
+
+        {/* Technical Safety Matrix Subtext */}
+        <div className="flex items-center justify-center gap-2 text-[8px] font-bold tracking-widest text-neutral-400 uppercase pt-4">
+          <span className="h-1 w-1 bg-neutral-300 rounded-full animate-pulse" />
+          <span>DATA RECORD ENCRYPTED VIA ENDPOINT LEDGER</span>
+        </div>
+
       </div>
-    </div>
+    </section>
   );
 };
 
